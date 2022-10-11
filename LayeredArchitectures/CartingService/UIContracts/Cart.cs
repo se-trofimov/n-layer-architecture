@@ -1,4 +1,4 @@
 ﻿namespace CartingService.UIContracts
 {
-    public record Cart(int Id);
+    public record Cart(Guid Id, IEnumerable<Item> items);
 }

@@ -3,7 +3,7 @@ using Microsoft.Azure.Cosmos;
 
 namespace CartingService.DataAccessLayer
 {
-    public class CartRepository : ICartRepository
+    public class CosmosDbCartRepository : ICartRepository
     {
         private readonly CosmosDbDataService _cosmosDbDataService;
         private readonly string _dbName;
@@ -11,7 +11,7 @@ namespace CartingService.DataAccessLayer
         private readonly string _partitionKey;
         private readonly int _throughput;
 
-        public CartRepository(CosmosDbDataService cosmosDbDataService,
+        public CosmosDbCartRepository(CosmosDbDataService cosmosDbDataService,
             string dbName,
             string containerName,
             string partitionKey,
@@ -28,16 +28,22 @@ namespace CartingService.DataAccessLayer
         public async Task<Cart> AddAsync(Cart cart)
         {
             var container = await _cosmosDbDataService.GetOrCreateContainerAsync(_dbName, _containerName, _partitionKey, _throughput);
-            return await container.UpsertItemAsync(cart, new PartitionKey(cart.Id));
+            return await container.UpsertItemAsync(cart, new PartitionKey(cart.Id.ToString()));
+        }
+
+        public async Task<Cart> UpdateAsync(Cart cart)
+        {
+            var container = await _cosmosDbDataService.GetOrCreateContainerAsync(_dbName, _containerName, _partitionKey, _throughput);
+            return await container.UpsertItemAsync(cart, new PartitionKey(cart.Id.ToString()));
         }
 
         public async Task RemoveAsync(Cart cart)
         {
             var container = await _cosmosDbDataService.GetOrCreateContainerAsync(_dbName, _containerName, _partitionKey, _throughput);
-            await container.DeleteItemAsync<Cart>(cart.Id, new PartitionKey(_partitionKey));
+            await container.DeleteItemAsync<Cart>(cart.Id.ToString(), new PartitionKey(_partitionKey));
         }
 
-        public async Task<Cart> GetItemById(int id)
+        public async Task<Cart> GetItemById(Guid id)
         {
             var container = await _cosmosDbDataService.GetOrCreateContainerAsync(_dbName, _containerName, _partitionKey, _throughput);
             return await
