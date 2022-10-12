@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using CartingService.DataAccessLayer.Entities;
+using CartingService.Exceptions;
 using Microsoft.Azure.Cosmos;
 
 namespace CartingService.DataAccessLayer
@@ -44,12 +45,21 @@ namespace CartingService.DataAccessLayer
             await container.DeleteItemAsync<Cart>(cart.Id.ToString(), new PartitionKey(_partitionKey));
         }
 
-        public async Task<Cart?> GetItemById(Guid id)
+        public async Task<Cart> GetItemById(Guid id)
         {
             var container = await _cosmosDbDataService.GetOrCreateContainerAsync(_dbName, _containerName, _partitionKey, _throughput);
-            var response = await
-                container.ReadItemAsync<Cart>(id.ToString(), new PartitionKey(id.ToString()));
-            return response.StatusCode == HttpStatusCode.NotFound ? null : response.Resource;
+            try
+            {
+                var response = await
+                    container.ReadItemAsync<Cart>(id.ToString(), new PartitionKey(id.ToString()));
+                return response.Resource;
+            }
+            catch (CosmosException e)
+            {
+                if (e.StatusCode == HttpStatusCode.NotFound)
+                    throw new NotFoundException($"Cart with Id {id} not exists");
+                else throw;
+            }
         }
     }
 }

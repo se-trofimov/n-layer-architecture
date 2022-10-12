@@ -2,6 +2,8 @@ using CartingService.BusinessLogicLayer;
 using CartingService.Configuration;
 using CartingService.DataAccessLayer;
 using CartingService.MappingProfiles;
+using CartingService.Validators;
+using FluentValidation;
 using Microsoft.Azure.Cosmos;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -47,7 +49,7 @@ builder.Services.AddTransient<ICartRepository>(provider => new CosmosDbCartRepos
     cosmosOptions.CosmosDbContainerPartitionKey,
     cosmosOptions.CosmosDbThroughput));
 builder.Services.AddTransient<ICartService, CartService>();
-
+builder.Services.AddValidatorsFromAssembly(typeof(ItemsValidator).Assembly);
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

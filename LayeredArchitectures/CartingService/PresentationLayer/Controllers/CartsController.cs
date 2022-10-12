@@ -1,4 +1,5 @@
 ﻿using CartingService.BusinessLogicLayer;
+using CartingService.Exceptions;
 using CartingService.UIContracts;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,8 +25,15 @@ namespace CartingService.PresentationLayer.Controllers
         [HttpGet("{id:guid}", Name = nameof(GetCartById))]
         public async Task<IActionResult> GetCartById(Guid id)
         {
-            var cart = await _service.GetCart(id);
-            return Ok(cart);
+            try
+            {
+                var cart = await _service.GetCart(id);
+                return Ok(cart);
+            }
+            catch (NotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
         }
     }
 }

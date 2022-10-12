@@ -1,6 +1,6 @@
 ﻿using CartingService.BusinessLogicLayer;
-using CartingService.DataAccessLayer.Entities;
-using CartingService.UIContracts;
+using CartingService.Exceptions;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Item = CartingService.UIContracts.Item;
 
@@ -19,24 +19,49 @@ namespace CartingService.PresentationLayer.Controllers
         [HttpPost]
         public async Task<IActionResult> AddItemToCart(Guid cartId, [FromBody] Item item)
         {
-            var changedCart = await _service.AddItemToCart(cartId, item);
-            var addedItem = changedCart.items.FirstOrDefault(x => x.Id == item.Id);
-            return CreatedAtRoute(nameof(GetItemById), new { cartId, id = item.Id }, addedItem);
+            try
+            {
+                var changedCart = await _service.AddItemToCart(cartId, item);
+                var addedItem = changedCart.items.FirstOrDefault(x => x.Id == item.Id);
+                return CreatedAtRoute(nameof(GetItemById), new { cartId, id = item.Id }, addedItem);
+            }
+            catch (ValidationException e)
+            {
+                return BadRequest(e.Errors);
+            }
+            catch (NotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
         }
 
         [HttpGet("{id:int}", Name = nameof(GetItemById))]
         public async Task<IActionResult> GetItemById(Guid cartId, int id)
         {
-            var cart = await _service.GetCart(cartId);
-            var item = cart.items.FirstOrDefault(x => x.Id == id);
-            return Ok(item);
+            try
+            {
+                var cart = await _service.GetCart(cartId);
+                var item = cart.items.FirstOrDefault(x => x.Id == id);
+                return Ok(item);
+            }
+            catch (NotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
         }
 
         [HttpGet()]
         public async Task<IActionResult> GetItems(Guid cartId)
         {
-            var cart = await _service.GetCart(cartId);
-            return Ok(cart.items);
+            try
+            {
+                var cart = await _service.GetCart(cartId);
+                return Ok(cart.items);
+            }
+            catch (NotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
         }
     }
 }
