@@ -5,17 +5,17 @@ using Microsoft.AspNetCore.Mvc;
 namespace CartingService.PresentationLayer.Controllers
 {
     [Route("[controller]")]
-    public class CartController : ControllerBase
+    public class CartsController : ControllerBase
     {
-        private readonly CartService _service;
+        private readonly ICartService _service;
 
-        public CartController(CartService service)
+        public CartsController(ICartService service)
         {
             _service = service ?? throw new ArgumentNullException(nameof(service));
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateCart([FromBody] Cart cart)
+        public async Task<IActionResult> CreateCart([FromBody] NewCart cart)
         {
             var created = await _service.AddCart(cart);
             return CreatedAtRoute(nameof(GetCartById), new { created.Id }, created);
@@ -28,5 +28,4 @@ namespace CartingService.PresentationLayer.Controllers
             return Ok(cart);
         }
     }
-
 }

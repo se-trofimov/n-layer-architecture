@@ -1,12 +1,13 @@
 ﻿using AutoMapper;
 using CartingService.DataAccessLayer;
 using CartingService.Exceptions;
+using CartingService.UIContracts;
 using Cart = CartingService.UIContracts.Cart;
 using Item = CartingService.UIContracts.Item;
 
 namespace CartingService.BusinessLogicLayer
 {
-    public class CartService
+    public class CartService : ICartService
     {
         private readonly ICartRepository _cartRepository;
         private readonly IMapper _mapper;
@@ -17,12 +18,10 @@ namespace CartingService.BusinessLogicLayer
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        public async Task<Cart> AddCart(Cart cart)
+        public async Task<Cart> AddCart(NewCart cart)
         {
-            var created = await _cartRepository.AddAsync(new DataAccessLayer.Entities.Cart()
-            {
-                Id = cart.Id
-            });
+            var newCart = _mapper.Map<DataAccessLayer.Entities.Cart>(cart);
+            var created = await _cartRepository.AddAsync(newCart);
 
             return _mapper.Map<Cart>(created);
         }
@@ -31,7 +30,7 @@ namespace CartingService.BusinessLogicLayer
         {
             var cart = await _cartRepository.GetItemById(id);
             if (cart is null)
-                throw new NotFoundException($"Cart with Id {id} is not exists");
+                throw new NotFoundException($"Cart with Id {id} not exists");
             cart.AddItem(_mapper.Map<DataAccessLayer.Entities.Item>(item));
             var updated = await _cartRepository.UpdateAsync(cart);
             return _mapper.Map<Cart>(updated);
@@ -39,8 +38,11 @@ namespace CartingService.BusinessLogicLayer
 
         public async Task<Cart> GetCart(Guid id)
         {
-           var cart = await _cartRepository.GetItemById(id);
-           return _mapper.Map<Cart>(cart);
+            var cart = await _cartRepository.GetItemById(id);
+            if (cart is null)
+                throw new NotFoundException($"Cart with Id {id} not exists");
+            return _mapper.Map<Cart>(cart);
         }
+ 
     }
 }

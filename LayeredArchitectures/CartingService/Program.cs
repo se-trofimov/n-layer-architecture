@@ -1,5 +1,7 @@
+using CartingService.BusinessLogicLayer;
 using CartingService.Configuration;
 using CartingService.DataAccessLayer;
+using CartingService.MappingProfiles;
 using Microsoft.Azure.Cosmos;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,6 +11,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddAutoMapper(typeof(ImageProfile).Assembly);
+
 var cosmosOptions = new CosmosDbSettings();
 builder.Services.AddTransient(provider =>
 {
@@ -35,13 +39,14 @@ builder.Services.AddTransient(provider =>
     cosmosClientOptions.ConnectionMode = ConnectionMode.Gateway;
     return new CosmosClient(cosmosOptions.CosmosDbConnectionString, cosmosClientOptions);
 });
-
+builder.Services.AddTransient<CosmosDbDataService>();
 builder.Configuration.Bind("CosmosDbSettings", cosmosOptions);
 builder.Services.AddTransient<ICartRepository>(provider => new CosmosDbCartRepository(provider.GetRequiredService<CosmosDbDataService>(),
     cosmosOptions.CosmosDbName,
     cosmosOptions.CosmosDbContainerName,
     cosmosOptions.CosmosDbContainerPartitionKey,
     cosmosOptions.CosmosDbThroughput));
+builder.Services.AddTransient<ICartService, CartService>();
 
 var app = builder.Build();
 

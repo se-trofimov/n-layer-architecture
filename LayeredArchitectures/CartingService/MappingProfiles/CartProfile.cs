@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
-using CartingService.DataAccessLayer.Entities;
+using CartingService.UIContracts;
+using Cart = CartingService.DataAccessLayer.Entities.Cart;
 
 namespace CartingService.MappingProfiles
 {
@@ -9,6 +10,7 @@ namespace CartingService.MappingProfiles
         {
             CreateMap<Cart, UIContracts.Cart>()
                 .ReverseMap();
+            CreateMap<NewCart, Cart>();
         }
     }
 }

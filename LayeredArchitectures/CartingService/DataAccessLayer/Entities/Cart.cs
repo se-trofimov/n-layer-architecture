@@ -1,9 +1,11 @@
-﻿namespace CartingService.DataAccessLayer.Entities
+﻿using System.Collections.Immutable;
+
+namespace CartingService.DataAccessLayer.Entities
 {
     public class Cart
     {
         public Guid Id { get; set; }
-        public IEnumerable<Item> Items { get; set; } = Enumerable.Empty<Item>();
+        public ImmutableList<Item> Items { get; set; } =  ImmutableList<Item>.Empty;
 
         public void AddItem(Item item)
         {
@@ -14,9 +16,7 @@
             }
             else
             {
-                var items = Items.ToList();
-                items.Add(item);
-                Items = items;
+                Items = Items.Add(item);
             }
         }
     }
