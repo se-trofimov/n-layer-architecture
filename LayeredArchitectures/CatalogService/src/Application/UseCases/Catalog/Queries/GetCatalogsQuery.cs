@@ -24,8 +24,9 @@ public class GetCatalogQueryHandler : IRequestHandler<GetCatalogsQuery, Category
 
     public async Task<CategoryDto[]> Handle(GetCatalogsQuery request, CancellationToken cancellationToken)
     {
-        return await _applicationDbContext.Categories
-            .ProjectTo<CategoryDto>(_mapper.ConfigurationProvider)
+        var res = await _applicationDbContext.Categories
+            .Include(x=>x.ParentCategory)
             .ToArrayAsync(cancellationToken: cancellationToken);
+        return _mapper.Map<CategoryDto[]>(res);
     }
 }

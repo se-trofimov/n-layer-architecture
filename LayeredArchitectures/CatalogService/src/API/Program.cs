@@ -1,10 +1,6 @@
 using API.Filters;
-using CatalogService.Application.Common.Interfaces;
-using CatalogService.Application.Mappings;
-using CatalogService.Application.UseCases.Catalog.Queries;
-using CatalogService.Infrastructure.Persistence;
-using MediatR;
-using Microsoft.EntityFrameworkCore;
+using CatalogService.Application;
+using CatalogService.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,14 +8,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers(
     options => options.Filters.Add<ApiExceptionFilterAttribute>());
-builder.Services.AddDbContext<ApplicationDbContext>(optionsBuilder => optionsBuilder.UseInMemoryDatabase("catalog"));
-builder.Services.AddTransient<IApplicationDbContext, ApplicationDbContext>();
+builder.Services.AddInfrastructureServices(builder.Configuration);
+builder.Services.AddApplicationServices();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-builder.Services.AddMediatR(typeof(GetCatalogsQuery).Assembly);
-builder.Services.AddAutoMapper(typeof(CategoryMapping).Assembly);
-
+ 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
