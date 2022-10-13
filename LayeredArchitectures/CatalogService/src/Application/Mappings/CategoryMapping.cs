@@ -1,10 +1,10 @@
-﻿using CatalogService.Application.Common.Mappings;
+﻿using AutoMapper;
 using CatalogService.Application.Dtos;
 using CatalogService.Application.UseCases.Catalog.Commands;
 using CatalogService.Domain.Entities;
 
 namespace CatalogService.Application.Mappings;
-public class CategoryMapping: MappingProfile
+public class CategoryMapping: Profile
 {
     public CategoryMapping()
     {
