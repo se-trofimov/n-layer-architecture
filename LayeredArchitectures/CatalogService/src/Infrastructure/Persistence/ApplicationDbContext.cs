@@ -10,8 +10,8 @@ public class ApplicationDbContext :DbContext, IApplicationDbContext
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
-    public DbSet<Category> Categories { get; set; }
-    public DbSet<Item> Items { get; set; }
+    public DbSet<Category> Categories { get; set; } = null!;
+    public DbSet<Item> Items { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -9,11 +9,13 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="MediatR" Version="9.0.0" />
+      <Compile Remove="Exceptions\**" />
+      <EmbeddedResource Remove="Exceptions\**" />
+      <None Remove="Exceptions\**" />
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Exceptions\" />
+      <PackageReference Include="MediatR" Version="9.0.0" />
     </ItemGroup>
 
 </Project>

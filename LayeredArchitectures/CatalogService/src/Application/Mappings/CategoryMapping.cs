@@ -9,9 +9,9 @@ public class CategoryMapping: MappingProfile
     public CategoryMapping()
     {
         CreateMap<Category, CategoryDto>();
-        CreateMap<ChangeCategoryCommand, ChangeCategoryWithIdCommand>();
+        CreateMap<Category, CategorySlimDto>();
         CreateMap<CreateCategoryCommand, Category>();
-        CreateMap<ChangeCategoryWithIdCommand, Category>()
+        CreateMap<ChangeCategoryCommand, Category>()
             .ForMember(x=>x.Id, expression => expression.Ignore());
     }
 }

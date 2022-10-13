@@ -6,13 +6,13 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
-[Route("[controller]")]
-public class CatalogsController : ControllerBase
+[Route("categories")]
+public class CategoriesController : ControllerBase
 {
     private readonly IMediator _mediator;
     private readonly IMapper _mapper;
 
-    public CatalogsController(IMediator mediator, IMapper mapper)
+    public CategoriesController(IMediator mediator, IMapper mapper)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
@@ -36,9 +36,8 @@ public class CatalogsController : ControllerBase
 
     public async Task<ActionResult> ChangeCategory([FromBody] ChangeCategoryCommand command, int id)
     {
-        var withId = _mapper.Map<ChangeCategoryWithIdCommand>(command);
-        withId.Id = id;
-        await _mediator.Send(withId);
+        command.Id = id;
+        await _mediator.Send(command);
         return Ok();
     }
 
