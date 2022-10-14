@@ -14,6 +14,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "CatalogService\src\Infrastructure\Infrastructure.csproj", "{D211B50C-C9D0-4464-8E87-796DFD24A28A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API", "CatalogService\src\API\API.csproj", "{D02B14FF-21CD-4C9F-BE61-46B9D5951C0B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CartingService", "CartingService\CartingService.csproj", "{CA5AE020-4FAA-4FC6-80C7-7BF7B6696A4C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Carting", "Carting", "{086B9BAE-1DCB-4E5D-B01E-6DFC62AAF3D8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,6 +40,10 @@ Global
 		{D02B14FF-21CD-4C9F-BE61-46B9D5951C0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D02B14FF-21CD-4C9F-BE61-46B9D5951C0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D02B14FF-21CD-4C9F-BE61-46B9D5951C0B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA5AE020-4FAA-4FC6-80C7-7BF7B6696A4C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA5AE020-4FAA-4FC6-80C7-7BF7B6696A4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA5AE020-4FAA-4FC6-80C7-7BF7B6696A4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA5AE020-4FAA-4FC6-80C7-7BF7B6696A4C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -47,6 +54,7 @@ Global
 		{E977F22B-8186-4145-9216-BC5C15992792} = {8907F2F6-5B2F-4577-ABB0-2F2BC4880FA8}
 		{D211B50C-C9D0-4464-8E87-796DFD24A28A} = {8907F2F6-5B2F-4577-ABB0-2F2BC4880FA8}
 		{D02B14FF-21CD-4C9F-BE61-46B9D5951C0B} = {8907F2F6-5B2F-4577-ABB0-2F2BC4880FA8}
+		{CA5AE020-4FAA-4FC6-80C7-7BF7B6696A4C} = {086B9BAE-1DCB-4E5D-B01E-6DFC62AAF3D8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {354D4494-215F-4C36-AA2D-266325A58623}
