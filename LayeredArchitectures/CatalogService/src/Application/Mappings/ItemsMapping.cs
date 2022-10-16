@@ -10,5 +10,6 @@ public class ItemsMapping: Profile
     {
         CreateMap<Item, ItemDto>();
         CreateMap<CreateItemCommand, Item>();
+        CreateMap<ChangeItemCommand, Item>();
     }
 }

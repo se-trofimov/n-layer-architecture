@@ -34,7 +34,7 @@ public class ChangeItemCommandHandler : IRequestHandler<ChangeItemCommand, Unit>
         var category = await _applicationDbContext.Categories.FirstOrDefaultAsync(x => x.Id == request.CategoryId, cancellationToken: cancellationToken);
         if (category is null)
             throw new NotFoundException($"Category with id {request.CategoryId} not found");
-        var item = _applicationDbContext.Items.FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken: cancellationToken);
+        var item = await _applicationDbContext.Items.FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken: cancellationToken);
         if (item is null)
             throw new NotFoundException($"Item with id {request.Id} not found");
         _ = _mapper.Map(request, item);

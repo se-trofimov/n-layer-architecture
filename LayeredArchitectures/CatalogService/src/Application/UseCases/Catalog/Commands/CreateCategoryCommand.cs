@@ -33,7 +33,12 @@ public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryComman
         var newCategory = _mapper.Map<Category>(request);
         _applicationDbContext.Categories.Add(newCategory);
         await _applicationDbContext.SaveChangesAsync(cancellationToken);
-        await _applicationDbContext.Categories.LoadAsync(cancellationToken: cancellationToken);
-        return _mapper.Map<CategoryDto>(newCategory);
+
+        var createdCategory = await _applicationDbContext.Categories
+            .AsNoTracking()
+            .Include(x=>x.ParentCategory)
+            .FirstOrDefaultAsync(x => x.Id == newCategory.Id, cancellationToken: cancellationToken);
+
+        return _mapper.Map<CategoryDto>(createdCategory);
     }
 }

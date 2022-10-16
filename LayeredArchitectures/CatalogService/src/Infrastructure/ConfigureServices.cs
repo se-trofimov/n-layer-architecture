@@ -12,7 +12,7 @@ public static class ConfigureServices
     {
 
         services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseSqlite("Data Source=CatalogServiceDb.db"));
+            options.UseSqlite(configuration.GetConnectionString("DbConnectionString")));
         services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
 
         return services;
