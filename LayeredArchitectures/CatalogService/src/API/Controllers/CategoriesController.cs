@@ -1,4 +1,6 @@
-﻿using AutoMapper;
+﻿using System.Text.Json;
+using AutoMapper;
+using CatalogService.Application.Common;
 using CatalogService.Application.Dtos;
 using CatalogService.Application.UseCases.Catalog.Commands;
 using CatalogService.Application.UseCases.Catalog.Queries;
@@ -10,19 +12,27 @@ namespace API.Controllers;
 public class CategoriesController : ControllerBase
 {
     private readonly IMediator _mediator;
-    private readonly IMapper _mapper;
 
-    public CategoriesController(IMediator mediator, IMapper mapper)
+    public CategoriesController(IMediator mediator)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
     [HttpGet]
-    public async Task<ActionResult<CategoryDto[]>> GetCategories(QueryParams queryParams)
+    public async Task<ActionResult<PagedList<CategoryDto>>> GetCategories(QueryParams queryParams)
     {
-        var categories = await _mediator.Send(new GetCatalogsQuery(queryParams.PageNumber, queryParams.PageSize));
-        return Ok(categories);
+        var result = await _mediator.Send(new GetCatalogsQuery(queryParams.PageNumber, queryParams.PageSize));
+        var metadata = new
+        {
+            result.TotalCount,
+            result.PageSize,
+            result.CurrentPage,
+            result.TotalPages,
+            result.HasNext,
+            result.HasPrevious
+        };
+        Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(metadata));
+        return Ok(result);
     }
 
     [HttpGet("{id:int}", Name = nameof(GetCategoryById))]

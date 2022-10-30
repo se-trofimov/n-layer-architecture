@@ -33,6 +33,15 @@ public class GetCatalogQueryHandler : IRequestHandler<GetCatalogsQuery, PagedLis
             .Include(x=>x.ParentCategory)
             .ProjectTo<CategoryDto>(_mapper.ConfigurationProvider)
             .ToPagedList(request.PageNumber, request.PageSize);
+
+        var lookup = res.ToLookup(x => x.Id);
+
+        foreach (var cat in res)
+        {
+            if (cat.ParentCategoryId.HasValue)
+                cat.ParentCategory = lookup[cat.ParentCategoryId.Value].First();
+        }
+
         return res;
     }
 }

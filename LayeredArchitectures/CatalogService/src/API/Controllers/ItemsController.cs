@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Text.Json;
+using CatalogService.Application.Common;
 using CatalogService.Application.Dtos;
 using CatalogService.Application.UseCases.Items.Commands;
 using CatalogService.Application.UseCases.Items.Queries;
@@ -18,9 +19,19 @@ public class ItemsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<ItemDto[]>> GetItems(int categoryId, QueryParams queryParams)
+    public async Task<ActionResult<PagedList<ItemDto>>> GetItems(int categoryId, QueryParams queryParams)
     {
         var result = await _mediator.Send(new GetItemsQuery(categoryId, queryParams.PageNumber, queryParams.PageSize));
+        var metadata = new
+        {
+            result.TotalCount,
+            result.PageSize,
+            result.CurrentPage,
+            result.TotalPages,
+            result.HasNext,
+            result.HasPrevious
+        };
+        Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(metadata)); 
         return Ok(result);
     }
 
