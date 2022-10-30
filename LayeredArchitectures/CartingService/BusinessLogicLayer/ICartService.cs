@@ -4,7 +4,8 @@ namespace CartingService.BusinessLogicLayer;
 
 public interface ICartService
 {
-    Task<Cart> AddCart(NewCart cart);
-    Task<Cart> AddItemToCart(Guid id, Item item);
-    Task<Cart> GetCart(Guid id);
+    Task<Cart> AddCartAsync(NewCart cart);
+    Task<Cart> AddItemToCartAsync(Guid id, Item item);
+    Task<Cart> GetCartAsync(Guid id);
+    Task DeleteItemAsync(Guid cartId, int itemId);
 }

@@ -57,7 +57,9 @@ namespace CartingService.DataAccessLayer
             catch (CosmosException e)
             {
                 if (e.StatusCode == HttpStatusCode.NotFound)
-                    throw new NotFoundException($"Cart with Id {id} not exists");
+                {
+                    return await UpdateAsync(new Cart() { Id = id });
+                }
                 else throw;
             }
         }
