@@ -19,9 +19,9 @@ public class CategoriesController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<CategoryDto[]>> GetCategories()
+    public async Task<ActionResult<CategoryDto[]>> GetCategories(QueryParams queryParams)
     {
-        var categories = await _mediator.Send(new GetCatalogsQuery());
+        var categories = await _mediator.Send(new GetCatalogsQuery(queryParams.PageNumber, queryParams.PageSize));
         return Ok(categories);
     }
 

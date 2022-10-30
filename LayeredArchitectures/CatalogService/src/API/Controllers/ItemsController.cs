@@ -11,18 +11,16 @@ namespace API.Controllers;
 public class ItemsController : ControllerBase
 {
     private readonly IMediator _mediator;
-    private readonly IMapper _mapper;
 
-    public ItemsController(IMediator mediator, IMapper mapper)
+    public ItemsController(IMediator mediator)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
     [HttpGet]
-    public async Task<ActionResult<ItemDto[]>> GetItems(int categoryId)
+    public async Task<ActionResult<ItemDto[]>> GetItems(int categoryId, QueryParams queryParams)
     {
-        var result = await _mediator.Send(new GetItemsQuery(categoryId));
+        var result = await _mediator.Send(new GetItemsQuery(categoryId, queryParams.PageNumber, queryParams.PageSize));
         return Ok(result);
     }
 
