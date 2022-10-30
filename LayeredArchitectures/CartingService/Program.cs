@@ -1,18 +1,35 @@
+using CartingService;
+using System.Reflection;
 using CartingService.BusinessLogicLayer;
 using CartingService.Configuration;
 using CartingService.DataAccessLayer;
 using CartingService.MappingProfiles;
 using CartingService.Validators;
 using FluentValidation;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Azure.Cosmos;
+using Microsoft.Extensions.Options;
+using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(
+    options =>
+    {
+        options.RespectBrowserAcceptHeader = true;
+        options.ReturnHttpNotAcceptable = true;
+
+        options.Filters.Add(new ProducesAttribute("application/json"));
+        options.Filters.Add(new ConsumesAttribute("application/json"));
+    });
+
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
 builder.Services.AddAutoMapper(typeof(ImageProfile).Assembly);
 
 var cosmosOptions = new CosmosDbSettings();
@@ -41,6 +58,29 @@ builder.Services.AddTransient(provider =>
     cosmosClientOptions.ConnectionMode = ConnectionMode.Gateway;
     return new CosmosClient(cosmosOptions.CosmosDbConnectionString, cosmosClientOptions);
 });
+
+builder.Services.AddApiVersioning(o =>
+{
+    o.DefaultApiVersion = new Microsoft.AspNetCore.Mvc.ApiVersion(1, 0);
+    o.ReportApiVersions = true;
+});
+
+builder.Services.AddVersionedApiExplorer(
+    options =>
+    {
+        options.GroupNameFormat = "'v'VVV";
+        options.SubstituteApiVersionInUrl = true;
+    });
+
+var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+var xmlFilePath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+
+builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, SwaggerConfigureOptions>();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.IncludeXmlComments(xmlFilePath);
+});
+
 builder.Services.AddTransient<CosmosDbDataService>();
 builder.Configuration.Bind("CosmosDbSettings", cosmosOptions);
 builder.Services.AddTransient<ICartRepository>(provider => new CosmosDbCartRepository(provider.GetRequiredService<CosmosDbDataService>(),
@@ -55,8 +95,26 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwagger(options =>
+    {
+        options.PreSerializeFilters.Add((swagger, req) =>
+        {
+            swagger.Servers = new List<OpenApiServer>() { new OpenApiServer() { Url = $"https://{req.Host}" } };
+        });
+    });
+
+    IApiVersionDescriptionProvider apiVersionDescriptionProvider =
+        app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
+    
+    app.UseSwaggerUI(options =>
+    {
+        foreach (var desc in apiVersionDescriptionProvider.ApiVersionDescriptions)
+        {
+            options.SwaggerEndpoint($"../swagger/{desc.GroupName}/swagger.json", desc.ApiVersion.ToString());
+            options.DefaultModelsExpandDepth(-1);
+            options.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);
+        }
+    });
 }
 
 app.UseHttpsRedirection();

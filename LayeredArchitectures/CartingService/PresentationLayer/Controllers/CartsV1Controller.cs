@@ -6,12 +6,15 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CartingService.PresentationLayer.Controllers
 {
-    [Route("[controller]")]
-    public class CartsController : ControllerBase
+    [ApiController]
+    [Tags("Carts")]
+    [Route("api/v{version:apiVersion}/carts")]
+    [ApiVersion("1.0")]
+    public class CartsV1Controller : ControllerBase
     {
         private readonly ICartService _service;
 
-        public CartsController(ICartService service)
+        public CartsV1Controller(ICartService service)
         {
             _service = service ?? throw new ArgumentNullException(nameof(service));
         }
@@ -20,11 +23,11 @@ namespace CartingService.PresentationLayer.Controllers
         public async Task<IActionResult> CreateCart([FromBody] NewCart cart)
         {
             var created = await _service.AddCartAsync(cart);
-            return CreatedAtRoute(nameof(GetCartById), new { created.Id }, created);
+            return CreatedAtRoute(nameof(GetCartByIdV1), new { created.Id }, created);
         }
 
-        [HttpGet("{id:guid}", Name = nameof(GetCartById))]
-        public async Task<IActionResult> GetCartById(Guid id)
+        [HttpGet("{id:guid}", Name = nameof(GetCartByIdV1))]
+        public async Task<IActionResult> GetCartByIdV1(Guid id)
         {
             try
             {
