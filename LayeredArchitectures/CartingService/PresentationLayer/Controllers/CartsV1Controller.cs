@@ -19,13 +19,6 @@ namespace CartingService.PresentationLayer.Controllers
             _service = service ?? throw new ArgumentNullException(nameof(service));
         }
 
-        [HttpPost]
-        public async Task<IActionResult> CreateCart([FromBody] NewCart cart)
-        {
-            var created = await _service.AddCartAsync(cart);
-            return CreatedAtRoute(nameof(GetCartByIdV1), new { created.Id }, created);
-        }
-
         [HttpGet("{id:guid}", Name = nameof(GetCartByIdV1))]
         public async Task<IActionResult> GetCartByIdV1(Guid id)
         {
