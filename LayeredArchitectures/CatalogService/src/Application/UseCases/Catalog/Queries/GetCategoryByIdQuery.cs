@@ -6,16 +6,16 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace CatalogService.Application.UseCases.Catalog.Queries;
-public class GetCatalogByIdQuery: IRequest<CategoryDto>
+public class GetCategoryByIdQuery: IRequest<CategoryDto>
 {
-    public GetCatalogByIdQuery(int id)
+    public GetCategoryByIdQuery(int id)
     {
         Id = id;
     }
     public int Id { get; }
 }
 
-public class GetCatalogByIdQueryHandler : IRequestHandler<GetCatalogByIdQuery, CategoryDto>
+public class GetCatalogByIdQueryHandler : IRequestHandler<GetCategoryByIdQuery, CategoryDto>
 {
     private readonly IApplicationDbContext _applicationDbContext;
     private readonly IMapper _mapper;
@@ -25,7 +25,7 @@ public class GetCatalogByIdQueryHandler : IRequestHandler<GetCatalogByIdQuery, C
         _applicationDbContext = applicationDbContext ?? throw new ArgumentNullException(nameof(applicationDbContext));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
-    public async Task<CategoryDto> Handle(GetCatalogByIdQuery request, CancellationToken cancellationToken)
+    public async Task<CategoryDto> Handle(GetCategoryByIdQuery request, CancellationToken cancellationToken)
     {
         await _applicationDbContext.Categories.LoadAsync(cancellationToken: cancellationToken);
         var category = await _applicationDbContext.Categories
