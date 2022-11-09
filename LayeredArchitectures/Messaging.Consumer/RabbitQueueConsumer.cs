@@ -12,14 +12,14 @@ public class RabbitQueueConsumer : IQueueConsumer
     private readonly Lazy<IConnection> _connection;
     private readonly Lazy<IModel> _channel;
 
-    public RabbitQueueConsumer(IConnectionFactory connectionFactory, ILogger logger)
+    public RabbitQueueConsumer(IConnectionFactory connectionFactory, ILogger<RabbitQueueConsumer> logger)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         IConnectionFactory connectionFactory1 = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
         _connection = new Lazy<IConnection>(() => connectionFactory1.CreateConnection());
         _channel = new Lazy<IModel>(() => _connection.Value.CreateModel());
     }
-    public Task ListenAsync<T>(string destination, Action<T> onMessageReceived, CancellationToken cancellationToken)
+    public Task ListenAsync<T>(string destination, Func<T, Task> onMessageReceived, CancellationToken cancellationToken)
     {
         var consumer = new EventingBasicConsumer(_channel.Value);
         consumer.Received += (model, ea) =>

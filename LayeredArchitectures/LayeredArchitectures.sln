@@ -25,11 +25,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application.UnitTests", "Ca
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application.IntegrationTests", "CatalogService\tests\Application.IntegrationTests\Application.IntegrationTests.csproj", "{9A0C1D95-58CA-4F20-97EB-468439ED3997}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Messaging.Producer", "Messaging.Producer\Messaging.Producer.csproj", "{15383F8D-EC39-4A1D-BD87-085D812D26FE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Messaging.Producer", "Messaging.Producer\Messaging.Producer.csproj", "{15383F8D-EC39-4A1D-BD87-085D812D26FE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Messaging.Abstractions", "Messaging.Abstractions\Messaging.Abstractions.csproj", "{DB63D020-68C8-4D81-8CB7-4D1607677CC8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Messaging.Abstractions", "Messaging.Abstractions\Messaging.Abstractions.csproj", "{DB63D020-68C8-4D81-8CB7-4D1607677CC8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Messaging.Consumer", "Messaging.Consumer\Messaging.Consumer.csproj", "{59ACA916-540F-48A7-8175-6B8E83FE249E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Messaging.Consumer", "Messaging.Consumer\Messaging.Consumer.csproj", "{59ACA916-540F-48A7-8175-6B8E83FE249E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -2,5 +2,5 @@
 
 public interface IQueueConsumer
 {
-    Task ListenAsync<T>(string destination, Action<T> onMessageReceived, CancellationToken cancellationToken);
+    Task ListenAsync<T>(string destination, Func<T, Task> onMessageReceived, CancellationToken cancellationToken);
 }

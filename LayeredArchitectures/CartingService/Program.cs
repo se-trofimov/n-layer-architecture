@@ -8,11 +8,15 @@ using CartingService.Validators;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
-using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using Messaging.Abstractions;
+using Messaging.Consumer;
+using RabbitMQ.Client;
+ 
+ 
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,6 +35,7 @@ builder.Services.AddControllers(
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddAutoMapper(typeof(ImageProfile).Assembly);
+builder.Services.AddHostedService<ItemsMessagesConsumerService>();
 
 var cosmosOptions = new CosmosDbSettings();
 builder.Services.AddTransient(provider =>
@@ -90,6 +95,17 @@ builder.Services.AddTransient<ICartRepository>(provider => new CosmosDbCartRepos
     cosmosOptions.CosmosDbThroughput));
 builder.Services.AddTransient<ICartService, CartService>();
 builder.Services.AddValidatorsFromAssembly(typeof(ItemsValidator).Assembly);
+builder.Services.AddLogging();
+builder.Services.AddSingleton<IQueueConsumer, RabbitQueueConsumer>();
+var rabbitMqConfig = new RabbitMqConfiguration();
+builder.Configuration.GetSection(nameof(RabbitMqConfiguration)).Bind(rabbitMqConfig);
+
+builder.Services.AddSingleton<IConnectionFactory>(new ConnectionFactory()
+{
+    HostName = rabbitMqConfig.HostName,
+    Port = rabbitMqConfig.Port
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

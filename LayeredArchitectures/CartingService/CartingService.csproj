@@ -22,7 +22,13 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="5.0.0" />
     <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.31.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.9" />
+    <PackageReference Include="RabbitMQ.Client" Version="6.4.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Messaging.Abstractions\Messaging.Abstractions.csproj" />
+    <ProjectReference Include="..\Messaging.Consumer\Messaging.Consumer.csproj" />
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties appsettings_1development_1json__JsonSchema="https://json.schemastore.org/appsettings.json" /></VisualStudio></ProjectExtensions>
