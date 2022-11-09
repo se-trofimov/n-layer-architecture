@@ -3,6 +3,7 @@ using AutoMapper;
 using CatalogService.Application.Common.Exceptions;
 using CatalogService.Application.Common.Interfaces;
 using MediatR;
+using Messaging.Abstractions;
 using Microsoft.EntityFrameworkCore;
 
 namespace CatalogService.Application.UseCases.Items.Commands;
@@ -23,7 +24,8 @@ public class ChangeItemCommandHandler : IRequestHandler<ChangeItemCommand, Unit>
     private readonly IApplicationDbContext _applicationDbContext;
     private readonly IMapper _mapper;
 
-    public ChangeItemCommandHandler(IApplicationDbContext applicationDbContext, IMapper mapper)
+    public ChangeItemCommandHandler(IApplicationDbContext applicationDbContext, 
+        IMapper mapper, IQueueProducer<ChangeItemCommand> producer)
     {
         _applicationDbContext = applicationDbContext ?? throw new ArgumentNullException(nameof(applicationDbContext));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));

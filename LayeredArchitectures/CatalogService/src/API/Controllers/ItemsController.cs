@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using CatalogService.Application.Common;
 using CatalogService.Application.Dtos;
+using CatalogService.Application.Notifications;
 using CatalogService.Application.UseCases.Items.Commands;
 using CatalogService.Application.UseCases.Items.Queries;
 using CatalogService.Domain.Entities;
@@ -95,10 +96,11 @@ public class ItemsController : ControllerBase
     }
 
     [HttpPut("{id:int}", Name = nameof(ChangeItem))]
-    public async Task<ActionResult> ChangeItem(int categoryId, int itemId, [FromBody] ChangeItemCommand command)
+    public async Task<ActionResult> ChangeItem(int categoryId, int id, [FromBody] ChangeItemCommand command)
     {
-        command.Id = itemId;
+        command.Id = id;
         var result = await _mediator.Send(command);
+        await _mediator.Publish(new ItemHasBeenChangedNotification(command.Id, command.Name, command.Image, command.Price));
         return NoContent();
     }
 

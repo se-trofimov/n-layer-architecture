@@ -2,8 +2,11 @@ using API;
 using API.Filters;
 using CatalogService.Application;
 using CatalogService.Infrastructure;
+using Messaging.Abstractions;
+using Messaging.Producer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
+using RabbitMQ.Client;
 
 
 public class Program
@@ -42,9 +45,18 @@ public class Program
                 jsonOutputFormatter.SupportedMediaTypes.Add("application/hateoas+json");
             }
         });
-
+        
         builder.Services.AddScoped<ValidateMediaTypeAttribute>();
+        builder.Services.AddScoped(typeof(IQueueProducer<>), typeof(RabbitQueueProducer<>));
+        var rabbitMqConfig = new RabbitMqConfiguration();
+        builder.Configuration.GetSection(nameof(RabbitMqConfiguration)).Bind(rabbitMqConfig);
 
+        builder.Services.AddSingleton<IConnectionFactory>(new ConnectionFactory()
+        {
+            HostName = rabbitMqConfig.HostName,
+            Port = rabbitMqConfig.Port
+        });
+        
         var app = builder.Build();
 
         // Configure the HTTP request pipeline.
@@ -64,4 +76,10 @@ public class Program
     }
 
 
+}
+
+public class RabbitMqConfiguration
+{
+    public string? HostName { get; set; }
+    public int Port { get; set; }
 }

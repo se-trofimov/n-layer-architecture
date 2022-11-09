@@ -8,38 +8,39 @@ namespace Messaging.Producer;
 
 public class RabbitQueueProducer<TMessage> : IDisposable, IQueueProducer<TMessage>
 {
-    private readonly Lazy<IConnection> _connection;
-    private readonly Lazy<IModel> _channel;
-    private readonly Lazy<IBasicProperties> _bp;
+    private readonly IConnection _connection;
+    private readonly IModel _channel;
+    private readonly IBasicProperties _bp;
 
     public RabbitQueueProducer(IConnectionFactory connectionFactory)
     {
         IConnectionFactory connectionFactory1 = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
-        _connection = new Lazy<IConnection>(() => connectionFactory1.CreateConnection());
-        _channel = new Lazy<IModel>(() => _connection.Value.CreateModel());
-        _bp = new Lazy<IBasicProperties>(() =>
-        {
-            var bp = _channel.Value.CreateBasicProperties();
-            bp.ContentType = MediaTypeNames.Application.Json;
-            return bp;
-        });
+        _connection = connectionFactory1.CreateConnection();
+        _channel = _connection.CreateModel();
+        var bp = _channel.CreateBasicProperties();
+        bp.ContentType = MediaTypeNames.Application.Json;
+        _bp = bp;
+
     }
 
     public Task Send(TMessage message, string destination)
     {
-        _channel.Value.QueueDeclare(destination);
+        _channel.QueueDeclare(queue: destination, autoDelete: false, durable: true, exclusive: false);
+        _channel.QueueBind(destination, "amq.direct", destination);
 
         var body = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(message));
-
-        return Task.Run(() => _channel.Value.BasicPublish(exchange: "default",
-             routingKey: "destination",
-             basicProperties: _bp.Value,
-             body: body));
+        return Task.Run(() =>
+        {
+            _channel.BasicPublish(exchange: "amq.direct",
+                routingKey: destination,
+                basicProperties: _bp,
+                body: body);
+        });
     }
 
     public void Dispose()
     {
-        _connection.Value.Dispose();
-        _channel.Value.Dispose();
+        _connection.Dispose();
+        _channel.Dispose();
     }
 }
