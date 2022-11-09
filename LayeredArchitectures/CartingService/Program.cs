@@ -95,7 +95,7 @@ builder.Services.AddTransient<ICartRepository>(provider => new CosmosDbCartRepos
     cosmosOptions.CosmosDbThroughput));
 builder.Services.AddTransient<ICartService, CartService>();
 builder.Services.AddValidatorsFromAssembly(typeof(ItemsValidator).Assembly);
-builder.Services.AddLogging();
+
 builder.Services.AddSingleton<IQueueConsumer, RabbitQueueConsumer>();
 var rabbitMqConfig = new RabbitMqConfiguration();
 builder.Configuration.GetSection(nameof(RabbitMqConfiguration)).Bind(rabbitMqConfig);

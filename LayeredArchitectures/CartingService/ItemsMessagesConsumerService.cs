@@ -23,6 +23,7 @@ public class ItemsMessagesConsumerService: IHostedService
 
     public Task StopAsync(CancellationToken cancellationToken)
     {
+        _queueConsumer.Dispose();
         return Task.CompletedTask;
     }
 }

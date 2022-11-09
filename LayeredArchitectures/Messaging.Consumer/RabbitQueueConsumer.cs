@@ -9,31 +9,30 @@ namespace Messaging.Consumer;
 public class RabbitQueueConsumer : IQueueConsumer
 {
     private readonly ILogger _logger;
-    private readonly Lazy<IConnection> _connection;
-    private readonly Lazy<IModel> _channel;
+    private readonly IConnection _connection;
+    private readonly IModel _channel;
 
     public RabbitQueueConsumer(IConnectionFactory connectionFactory, ILogger<RabbitQueueConsumer> logger)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         IConnectionFactory connectionFactory1 = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
-        _connection = new Lazy<IConnection>(() => connectionFactory1.CreateConnection());
-        _channel = new Lazy<IModel>(() => _connection.Value.CreateModel());
+        _connection = connectionFactory1.CreateConnection();
+        _channel = _connection.CreateModel();
     }
     public Task ListenAsync<T>(string destination, Func<T, Task> onMessageReceived, CancellationToken cancellationToken)
     {
-        var consumer = new EventingBasicConsumer(_channel.Value);
+        var consumer = new EventingBasicConsumer(_channel);
         consumer.Received += (model, ea) =>
         {
-            _logger.LogInformation("Message is received. Destination {destination}. ContentType {type}",
-                destination, ea.BasicProperties.ContentType);
+            _logger.LogInformation("Message is received. Destination {destination}. ContentType {type}. Delivery tag {tag}",
+                destination, ea.BasicProperties.ContentType, ea.DeliveryTag);
 
-            IModel channel = model as IModel;
             if (ea.BasicProperties.ContentType != MediaTypeNames.Application.Json)
             {
-                channel?.BasicAck(ea.DeliveryTag, false);
+                _channel.BasicAck(ea.DeliveryTag, false);
                 return;
             }
-
+            
             try
             {
                 var body = ea.Body.Span;
@@ -42,7 +41,10 @@ public class RabbitQueueConsumer : IQueueConsumer
                 if (deserialized is { })
                     onMessageReceived(deserialized);
 
-                channel?.BasicAck(ea.DeliveryTag, false);
+                _channel.BasicAck(ea.DeliveryTag, false);
+
+                _logger.LogInformation("Message is acknowledged. Destination {destination}. ContentType {type}. Delivery tag {tag}",
+                    destination, ea.BasicProperties.ContentType, ea.DeliveryTag);
             }
             catch (Exception e)
             {
@@ -51,8 +53,14 @@ public class RabbitQueueConsumer : IQueueConsumer
             }
         };
 
-        _channel.Value.BasicConsume(destination, false, consumer);
+        _channel.BasicConsume(destination, false, consumer);
 
         return Task.Delay(int.MaxValue, cancellationToken);
+    }
+
+    public void Dispose()
+    {
+        _connection.Dispose();
+        _channel.Dispose();
     }
 }

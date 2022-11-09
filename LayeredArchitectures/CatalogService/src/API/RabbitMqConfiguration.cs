@@ -1,3 +1,5 @@
+namespace API;
+
 public class RabbitMqConfiguration
 {
     public string? HostName { get; set; }

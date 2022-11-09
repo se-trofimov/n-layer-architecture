@@ -13,14 +13,6 @@ public class ItemHasBeenChangedNotificationHandler : INotificationHandler<ItemHa
     }
     public async Task Handle(ItemHasBeenChangedNotification notification, CancellationToken cancellationToken)
     {
-        try
-        {
-            await _producer.Send(notification, "items-changed-queue");
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-        
-        }
+        await _producer.Send(notification, "items-changed-queue");
     }
 }
