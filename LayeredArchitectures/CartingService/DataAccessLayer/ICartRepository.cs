@@ -8,4 +8,5 @@ public interface ICartRepository
     Task RemoveAsync(Cart cart);
     Task<Cart> UpdateAsync(Cart cart);
     Task<Cart> GetItemById(Guid id);
+    IAsyncEnumerable<Cart> GetCartsWithItemId(int itemId);
 }

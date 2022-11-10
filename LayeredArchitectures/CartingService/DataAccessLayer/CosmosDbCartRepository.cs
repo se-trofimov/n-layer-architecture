@@ -1,6 +1,5 @@
 ﻿using System.Net;
 using CartingService.DataAccessLayer.Entities;
-using CartingService.Exceptions;
 using Microsoft.Azure.Cosmos;
 
 namespace CartingService.DataAccessLayer
@@ -61,6 +60,23 @@ namespace CartingService.DataAccessLayer
                     return await UpdateAsync(new Cart() { Id = id });
                 }
                 else throw;
+            }
+        }
+
+        public async IAsyncEnumerable<Cart> GetCartsWithItemId(int itemId)
+        {
+            var container = await _cosmosDbDataService.GetOrCreateContainerAsync(_dbName, _containerName, _partitionKey, _throughput);
+            var query = $"SELECT c.id, c.items FROM c JOIN i IN c.items WHERE i.id = {itemId}";
+
+            using FeedIterator<Cart> feed = container.GetItemQueryIterator<Cart>(queryText: query);
+            while (feed.HasMoreResults)
+            {
+                FeedResponse<Cart> response = await feed.ReadNextAsync();
+                if (response.StatusCode != HttpStatusCode.OK)
+                    continue;
+
+                foreach (var cart in response.Resource)
+                    yield return cart;
             }
         }
     }
