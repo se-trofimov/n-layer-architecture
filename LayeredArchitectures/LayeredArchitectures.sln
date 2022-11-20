@@ -31,6 +31,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Messaging.Abstractions", "M
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Messaging.Consumer", "Messaging.Consumer\Messaging.Consumer.csproj", "{59ACA916-540F-48A7-8175-6B8E83FE249E}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CustomIAM", "CustomIAM", "{0B411571-168C-4C64-88B2-1012583F2AA8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomIdentityServer", "CustomIAM\CustomIdentityServer\CustomIdentityServer.csproj", "{18C738BD-1175-4417-B60C-7C93BCEB21B1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -77,6 +81,10 @@ Global
 		{59ACA916-540F-48A7-8175-6B8E83FE249E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{59ACA916-540F-48A7-8175-6B8E83FE249E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{59ACA916-540F-48A7-8175-6B8E83FE249E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18C738BD-1175-4417-B60C-7C93BCEB21B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18C738BD-1175-4417-B60C-7C93BCEB21B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18C738BD-1175-4417-B60C-7C93BCEB21B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18C738BD-1175-4417-B60C-7C93BCEB21B1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -91,6 +99,7 @@ Global
 		{60D1240C-0603-4948-AD1E-7296170DA061} = {153594DB-7EE3-44AA-94E8-0D7EC48C0771}
 		{C66D0926-53AA-43E7-B446-53EF1D618CBE} = {60D1240C-0603-4948-AD1E-7296170DA061}
 		{9A0C1D95-58CA-4F20-97EB-468439ED3997} = {60D1240C-0603-4948-AD1E-7296170DA061}
+		{18C738BD-1175-4417-B60C-7C93BCEB21B1} = {0B411571-168C-4C64-88B2-1012583F2AA8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {354D4494-215F-4C36-AA2D-266325A58623}
