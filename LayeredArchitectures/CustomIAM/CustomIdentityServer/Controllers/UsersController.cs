@@ -39,20 +39,4 @@ public class UsersController : ControllerBase
             return BadRequest(e.Message);
         }
     }
-
-    [HttpGet("login")]
-    public async Task<IActionResult> Login(string email, string password)
-    {
-        var user = await _userIdentityService.GetUserByEmailAsync(email);
-        if (user == null)
-            return NotFound($"User with email {email} not found!");
-        
-        var passwordIsValid = _userIdentityService.PasswordIsValid(user, password);
-
-        if (passwordIsValid)
-            return BadRequest("Password is invalid");
-
-        var token = _jwtUtils.GenerateToken(user);
-        return Ok(token);
-    }
 }

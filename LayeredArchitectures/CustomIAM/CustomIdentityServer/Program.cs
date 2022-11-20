@@ -16,7 +16,8 @@ builder.Services.AddValidatorsFromAssembly(typeof(CreationUserValidator).Assembl
 builder.Services.AddScoped<UserIdentityService>();
 builder.Services.AddSingleton<PasswordEncrypt>();
 builder.Services.AddDbContext<IdentityDbContext>(optionsBuilder => optionsBuilder.UseSqlite(builder.Configuration.GetConnectionString("DbConnectionString")));
-builder.Services.AddSingleton<IJwtUtils>(new JwtUtils(builder.Configuration["SecurityKey"]));
+builder.Services.AddSingleton<IJwtUtils>(new JwtUtils(builder.Configuration["Issuer"]));
+builder.Services.AddMemoryCache();
 
 var app = builder.Build();
 

@@ -4,10 +4,13 @@ using CatalogService.Application.Dtos;
 using CatalogService.Application.UseCases.Catalog.Commands;
 using CatalogService.Application.UseCases.Catalog.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
 
 namespace API.Controllers;
+
+[Authorize]
 [Route("categories")]
 public class CategoriesController : ControllerBase
 {
@@ -20,6 +23,7 @@ public class CategoriesController : ControllerBase
         _linkGenerator = linkGenerator ?? throw new ArgumentNullException(nameof(linkGenerator));
     }
 
+    [AllowAnonymous]
     [HttpGet(Name = nameof(GetCategories))]
     [ServiceFilter(typeof(ValidateMediaTypeAttribute))]
     public async Task<ActionResult<PagedList<CategoryDto>>> GetCategories(QueryParams queryParams)
@@ -86,6 +90,7 @@ public class CategoriesController : ControllerBase
         return links;
     }
 
+    [AllowAnonymous]
     [HttpGet("{id:int}", Name = nameof(GetCategoryById))]
     [ServiceFilter(typeof(ValidateMediaTypeAttribute))]
     public async Task<ActionResult<CategoryDto>> GetCategoryById(int id)
@@ -106,8 +111,8 @@ public class CategoriesController : ControllerBase
         return Ok(response);
     }
 
+    [Authorize(policy: "Category.Update")]
     [HttpPut("{id:int}", Name = nameof(ChangeCategory))]
-
     public async Task<ActionResult> ChangeCategory([FromBody] ChangeCategoryCommand command, int id)
     {
         command.Id = id;
@@ -115,15 +120,16 @@ public class CategoriesController : ControllerBase
         return Ok();
     }
 
+    [Authorize(policy: "Category.Delete")]
     [HttpDelete("{id:int}", Name = nameof(DeleteCategory))]
-
     public async Task<ActionResult> DeleteCategory(int id)
     {
         await _mediator.Send(new DeleteCategoryCommand(id));
         return NoContent();
     }
 
-    [HttpPost()]
+    [Authorize(policy: "Category.Create")]
+    [HttpPost]
     public async Task<ActionResult<CategoryDto>> Create([FromBody] CreateCategoryCommand command)
     {
         var category = await _mediator.Send(command);

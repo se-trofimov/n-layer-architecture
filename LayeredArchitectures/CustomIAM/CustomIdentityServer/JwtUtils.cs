@@ -6,63 +6,40 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace CustomIdentityServer;
 
-public class JwtUtils: IJwtUtils
+public class JwtUtils : IJwtUtils
 {
-    private readonly byte[] _key;
+    private readonly string _issuer;
 
-    public JwtUtils(string key)
+    public JwtUtils(string issuer)
     {
-        _key = Encoding.ASCII.GetBytes(key);
+        _issuer = issuer ?? throw new ArgumentNullException(nameof(issuer));
     }
-    public string GenerateToken(User user)
+
+    public string GenerateToken(User user, string clientSecret)
     {
+        var key = Encoding.UTF8.GetBytes(clientSecret);
         var tokenHandler = new JwtSecurityTokenHandler();
+
         var tokenDescriptor = new SecurityTokenDescriptor
         {
-            Subject = new ClaimsIdentity(new[] { new Claim("id", user.Id.ToString()) }),
-            Expires = DateTime.UtcNow.AddDays(1),
-            
+            Subject = new ClaimsIdentity(new[]
+            {
+                new Claim("id", user.Id.ToString()),
+                new Claim(JwtRegisteredClaimNames.Name, user.Name),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email),
+            }),
             Claims = new Dictionary<string, object>()
             {
-                {"Roles", user.Roles.Select(x=>x.Title) },
-                {"Permissions", user.Roles.SelectMany(x=>x.Permissions).Select(x=>x.Title).Distinct() },
+                {"roles", user.Roles.Select(x=>x.Title)},  
+                {"permissions", user.Roles.SelectMany(x=>x.Permissions).Select(x=>x.Title).Distinct()}  
             },
-            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(_key), SecurityAlgorithms.HmacSha256Signature)
+            Expires = DateTime.UtcNow.AddMinutes(1),
+            Issuer = _issuer,
+            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
+           SecurityAlgorithms.HmacSha512Signature)
         };
 
-        var token = tokenHandler.CreateToken(tokenDescriptor);
+        var token = tokenHandler.CreateJwtSecurityToken(tokenDescriptor);
         return tokenHandler.WriteToken(token);
-    }
-
-    public int? ValidateToken(string? token)
-    {
-        if (string.IsNullOrWhiteSpace(token))
-            return null;
-
-        var tokenHandler = new JwtSecurityTokenHandler();
-        
-        try
-        {
-            tokenHandler.ValidateToken(token, new TokenValidationParameters
-            {
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(_key),
-                ValidateIssuer = false,
-                ValidateAudience = false,
-                // set clockskew to zero so tokens expire exactly at token expiration time (instead of 5 minutes later)
-                ClockSkew = TimeSpan.Zero
-            }, out SecurityToken validatedToken);
-
-            var jwtToken = (JwtSecurityToken)validatedToken;
-            var userId = int.Parse(jwtToken.Claims.First(x => x.Type == "id").Value);
-
-            // return user id from JWT token if validation successful
-            return userId;
-        }
-        catch
-        {
-            // return null if validation fails
-            return null;
-        }
     }
 }
