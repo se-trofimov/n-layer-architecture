@@ -5,14 +5,19 @@ namespace CustomIdentityServer;
 
 public class PasswordEncrypt
 {
-    public string GeneratePasswordHashUsingSalt(string password)
+    public string GeneratePasswordHashUsingSalt(string password, byte[]? salt = default)
     {
-        var salt = ArrayPool<byte>.Shared.Rent(16);
-        Random.Shared.NextBytes(salt);
+        if (salt is null)
+        {
+            salt = ArrayPool<byte>.Shared.Rent(16);
+            Random.Shared.NextBytes(salt);
+        }
+       
         var pbkdf2 = new Rfc2898DeriveBytes(password, salt, 10000);
         byte[] hash = pbkdf2.GetBytes(36);
         Array.Copy(salt, 0, hash, 0, 16);
         var passwordHash = Convert.ToBase64String(hash);
+        
         ArrayPool<byte>.Shared.Return(salt, true);
         
         return passwordHash;

@@ -36,8 +36,19 @@ public class UserIdentityService
         return user;
     }
 
-    public async Task<User?> GetUserByIdAsync(Guid id)
+    public async Task<User?> GetUserByEmailAsync(string email)
     {
-        return await _identityDbContext.Users.FirstOrDefaultAsync(x => x.Id == id);
+        return await _identityDbContext.Users
+            .Include(x=>x.Roles)
+            .ThenInclude(x=>x.Permissions)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Email == email);
+    }
+
+    public bool PasswordIsValid(User user, string password)
+    {
+       var salt = _passwordEncrypt.ExtractSaltFromEncryptedPassword(user.Password);
+       var regenerate = _passwordEncrypt.GeneratePasswordHashUsingSalt(password, salt);
+       return password == regenerate;
     }
 }

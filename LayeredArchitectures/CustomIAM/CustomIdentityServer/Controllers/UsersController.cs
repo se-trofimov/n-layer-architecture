@@ -10,12 +10,15 @@ namespace CustomIdentityServer.Controllers;
 public class UsersController : ControllerBase
 {
     private readonly UserIdentityService _userIdentityService;
+    private readonly IJwtUtils _jwtUtils;
     private readonly IValidator<CreationUser> _creationUserValidator;
 
     public UsersController(UserIdentityService userIdentityService,
+        IJwtUtils jwtUtils,
         IValidator<CreationUser> creationUserValidator)
     {
         _userIdentityService = userIdentityService ?? throw new ArgumentNullException(nameof(userIdentityService));
+        _jwtUtils = jwtUtils ?? throw new ArgumentNullException(nameof(jwtUtils));
         _creationUserValidator = creationUserValidator ?? throw new ArgumentNullException(nameof(creationUserValidator));
     }
 
@@ -35,5 +38,21 @@ public class UsersController : ControllerBase
         {
             return BadRequest(e.Message);
         }
+    }
+
+    [HttpGet("login")]
+    public async Task<IActionResult> Login(string email, string password)
+    {
+        var user = await _userIdentityService.GetUserByEmailAsync(email);
+        if (user == null)
+            return NotFound($"User with email {email} not found!");
+        
+        var passwordIsValid = _userIdentityService.PasswordIsValid(user, password);
+
+        if (passwordIsValid)
+            return BadRequest("Password is invalid");
+
+        var token = _jwtUtils.GenerateToken(user);
+        return Ok(token);
     }
 }

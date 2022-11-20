@@ -16,8 +16,12 @@ builder.Services.AddValidatorsFromAssembly(typeof(CreationUserValidator).Assembl
 builder.Services.AddScoped<UserIdentityService>();
 builder.Services.AddSingleton<PasswordEncrypt>();
 builder.Services.AddDbContext<IdentityDbContext>(optionsBuilder => optionsBuilder.UseSqlite(builder.Configuration.GetConnectionString("DbConnectionString")));
+builder.Services.AddSingleton<IJwtUtils>(new JwtUtils(builder.Configuration["SecurityKey"]));
 
 var app = builder.Build();
+
+var scope = app.Services.CreateScope();
+await DataSeeder.SeedDataAsync(scope.ServiceProvider.GetRequiredService<IdentityDbContext>());
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

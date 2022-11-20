@@ -21,6 +21,12 @@ public class JwtUtils: IJwtUtils
         {
             Subject = new ClaimsIdentity(new[] { new Claim("id", user.Id.ToString()) }),
             Expires = DateTime.UtcNow.AddDays(1),
+            
+            Claims = new Dictionary<string, object>()
+            {
+                {"Roles", user.Roles.Select(x=>x.Title) },
+                {"Permissions", user.Roles.SelectMany(x=>x.Permissions).Select(x=>x.Title).Distinct() },
+            },
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(_key), SecurityAlgorithms.HmacSha256Signature)
         };
 
