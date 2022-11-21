@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using RabbitMQ.Client;
@@ -40,7 +41,7 @@ public class Program
         builder.Services.AddApplicationServices();
 
         builder.Services.AddEndpointsApiExplorer();
-
+        builder.Services.AddHttpClient();
         builder.Services.AddSwaggerGen(c =>
         {
             c.SwaggerDoc("v1", new OpenApiInfo
@@ -82,7 +83,16 @@ public class Program
         });
 
         builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer();
+            .AddJwtBearer(options => 
+                options.TokenValidationParameters = new TokenValidationParameters()
+                {
+                    IssuerSigningKey = new SymmetricSecurityKey
+                        (Encoding.UTF8.GetBytes(builder.Configuration["Jwt:ClientSecret"])),
+                    ValidateIssuer = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidateAudience = false,
+                    ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                });
 
         builder.Services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
         builder.Services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
@@ -100,11 +110,44 @@ public class Program
         }
 
         app.UseHttpsRedirection();
+        app.UseMiddleware<CodeHandlerMiddleware>();
         app.UseAuthentication();
         app.UseAuthorization();
-
         app.MapControllers();
 
         app.Run();
+    }
+}
+
+public class CodeHandlerMiddleware
+{
+    private readonly RequestDelegate _next;
+   
+    public CodeHandlerMiddleware(RequestDelegate next)
+    {
+        _next = next ?? throw new ArgumentNullException(nameof(next));
+    }
+
+    public async Task InvokeAsync(HttpContext context)
+    {
+        if (context.Request.Headers.Authorization.FirstOrDefault() is {} code)
+        { 
+            var httpFactory = context.RequestServices.GetRequiredService<IHttpClientFactory>();
+            var httpClient = httpFactory.CreateClient();
+
+            var configuration = context.RequestServices.GetRequiredService<IConfiguration>();
+        
+            var url = $"{configuration["Jwt:Issuer"]}{configuration["Jwt:AccessTokenUrl"]}?code={code}&clientSecret={configuration["Jwt:ClientSecret"]}";
+            var response = await httpClient.GetAsync(url);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var token = $"Bearer {await response.Content.ReadAsStringAsync()}";
+                context.Request.Headers.Authorization = new StringValues(token);
+                await _next(context);
+            }
+            else context.Response.StatusCode = 403;
+        }
+        else context.Response.StatusCode = 403;
     }
 }

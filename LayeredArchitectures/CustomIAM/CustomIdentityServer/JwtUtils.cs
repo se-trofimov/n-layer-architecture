@@ -9,10 +9,12 @@ namespace CustomIdentityServer;
 public class JwtUtils : IJwtUtils
 {
     private readonly string _issuer;
+    private readonly string _audience;
 
-    public JwtUtils(string issuer)
+    public JwtUtils(string issuer, string audience)
     {
         _issuer = issuer ?? throw new ArgumentNullException(nameof(issuer));
+        _audience = audience ?? throw new ArgumentNullException(nameof(audience));
     }
 
     public string GenerateToken(User user, string clientSecret)
@@ -35,8 +37,9 @@ public class JwtUtils : IJwtUtils
             },
             Expires = DateTime.UtcNow.AddMinutes(1),
             Issuer = _issuer,
+            Audience = _audience,
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
-           SecurityAlgorithms.HmacSha512Signature)
+                SecurityAlgorithms.HmacSha512Signature)
         };
 
         var token = tokenHandler.CreateJwtSecurityToken(tokenDescriptor);

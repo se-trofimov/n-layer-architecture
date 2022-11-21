@@ -8,14 +8,14 @@ public class DataSeeder
     public static async Task SeedDataAsync(IdentityDbContext context)
     {
         var permissions = await context.Permissions.ToListAsync();
-        if (!permissions.Exists(x => x.Title == "Catalog.Read"))
-            context.Permissions.Add(new Permission() { Title = "Catalog.Read", Id = Guid.NewGuid() });
-        if (!permissions.Exists(x => x.Title == "Catalog.Update"))
-            context.Permissions.Add(new Permission() { Title = "Catalog.Update", Id = Guid.NewGuid() });
-        if (!permissions.Exists(x => x.Title == "Catalog.Create"))
-            context.Permissions.Add(new Permission() { Title = "Catalog.Create", Id = Guid.NewGuid() });
-        if (!permissions.Exists(x => x.Title == "Catalog.Delete"))
-            context.Permissions.Add(new Permission() { Title = "Catalog.Delete", Id = Guid.NewGuid() });
+        if (!permissions.Exists(x => x.Title == "Category.Read"))
+            context.Permissions.Add(new Permission() { Title = "Category.Read", Id = Guid.NewGuid() });
+        if (!permissions.Exists(x => x.Title == "Category.Update"))
+            context.Permissions.Add(new Permission() { Title = "Category.Update", Id = Guid.NewGuid() });
+        if (!permissions.Exists(x => x.Title == "Category.Create"))
+            context.Permissions.Add(new Permission() { Title = "Category.Create", Id = Guid.NewGuid() });
+        if (!permissions.Exists(x => x.Title == "Category.Delete"))
+            context.Permissions.Add(new Permission() { Title = "Category.Delete", Id = Guid.NewGuid() });
 
         var roles = await context.Roles.ToListAsync();
         if (!roles.Exists(x => x.Title == "Manager"))
@@ -29,24 +29,24 @@ public class DataSeeder
             .Include(x=>x.Permissions)
             .First(x => x.Title == "Manager");
 
-        if (manager.Permissions.FirstOrDefault(x => x.Title == "Catalog.Read") is null)
+        if (manager.Permissions.FirstOrDefault(x => x.Title == "Category.Read") is null)
         {
-            var permission = context.Permissions.First(x => x.Title == "Catalog.Read");
+            var permission = context.Permissions.First(x => x.Title == "Category.Read");
             manager.Permissions.Add(permission);
         }
-        if (manager.Permissions.FirstOrDefault(x => x.Title == "Catalog.Update") is null)
+        if (manager.Permissions.FirstOrDefault(x => x.Title == "Category.Update") is null)
         {
-            var permission = context.Permissions.First(x => x.Title == "Catalog.Update");
+            var permission = context.Permissions.First(x => x.Title == "Category.Update");
             manager.Permissions.Add(permission);
         }
-        if (manager.Permissions.FirstOrDefault(x => x.Title == "Catalog.Delete") is null)
+        if (manager.Permissions.FirstOrDefault(x => x.Title == "Category.Delete") is null)
         {
-            var permission = context.Permissions.First(x => x.Title == "Catalog.Delete");
+            var permission = context.Permissions.First(x => x.Title == "Category.Delete");
             manager.Permissions.Add(permission);
         }
-        if (manager.Permissions.FirstOrDefault(x => x.Title == "Catalog.Create") is null)
+        if (manager.Permissions.FirstOrDefault(x => x.Title == "Category.Create") is null)
         {
-            var permission = context.Permissions.First(x => x.Title == "Catalog.Create");
+            var permission = context.Permissions.First(x => x.Title == "Category.Create");
             manager.Permissions.Add(permission);
         }
 
@@ -54,9 +54,9 @@ public class DataSeeder
             .Include(x => x.Permissions)
             .First(x => x.Title == "Buyer");
 
-        if (buyer.Permissions.FirstOrDefault(x => x.Title == "Catalog.Read") is null)
+        if (buyer.Permissions.FirstOrDefault(x => x.Title == "Category.Read") is null)
         {
-            var permission = context.Permissions.First(x => x.Title == "Catalog.Read");
+            var permission = context.Permissions.First(x => x.Title == "Category.Read");
             buyer.Permissions.Add(permission);
         }
 
