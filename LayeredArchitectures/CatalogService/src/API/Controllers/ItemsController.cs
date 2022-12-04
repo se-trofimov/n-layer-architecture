@@ -4,13 +4,14 @@ using CatalogService.Application.Dtos;
 using CatalogService.Application.Notifications;
 using CatalogService.Application.UseCases.Items.Commands;
 using CatalogService.Application.UseCases.Items.Queries;
-using CatalogService.Domain.Entities;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
 
 namespace API.Controllers;
 
+[Authorize]
 [Route("categories/{categoryId:int}/items")]
 public class ItemsController : ControllerBase
 {
@@ -23,6 +24,7 @@ public class ItemsController : ControllerBase
         _linkGenerator = linkGenerator ?? throw new ArgumentNullException(nameof(linkGenerator));
     }
 
+    [AllowAnonymous]
     [HttpGet(Name = nameof(GetItems))]
     public async Task<ActionResult<PagedList<ItemDto>>> GetItems(int categoryId, QueryParams queryParams)
     {
@@ -57,6 +59,7 @@ public class ItemsController : ControllerBase
         return Ok(response);
     }
 
+    [AllowAnonymous]
     [HttpGet("{id:int}", Name = nameof(GetItemById))]
     public async Task<ActionResult<ItemDto>> GetItemById(int categoryId, int id)
     {
@@ -75,7 +78,7 @@ public class ItemsController : ControllerBase
         return Ok(response);
     }
 
-
+    [Authorize(policy: "Items.Create")]
     [HttpPost(Name = nameof(CreateItem))]
     public async Task<ActionResult<ItemDto>> CreateItem(int categoryId, [FromBody] CreateItemCommand command)
     {
@@ -95,6 +98,7 @@ public class ItemsController : ControllerBase
         return CreatedAtRoute(nameof(GetItemById), new { categoryId, id = item.Id }, response);
     }
 
+    [Authorize(policy: "Items.Update")]
     [HttpPut("{id:int}", Name = nameof(ChangeItem))]
     public async Task<ActionResult> ChangeItem(int categoryId, int id, [FromBody] ChangeItemCommand command)
     {
@@ -104,6 +108,7 @@ public class ItemsController : ControllerBase
         return NoContent();
     }
 
+    [Authorize(policy: "Items.Delete")]
     [HttpDelete("{id:int}", Name = nameof(DeleteItem))]
     public async Task<ActionResult> DeleteItem(int categoryId, int id)
     {

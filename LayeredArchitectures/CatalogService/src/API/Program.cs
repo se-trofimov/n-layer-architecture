@@ -1,11 +1,18 @@
+using System.Text;
 using API;
+using API.Auth;
 using API.Filters;
 using CatalogService.Application;
 using CatalogService.Infrastructure;
 using Messaging.Abstractions;
 using Messaging.Producer;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.Extensions.Primitives;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using RabbitMQ.Client;
 
 
@@ -25,27 +32,45 @@ public class Program
                 options.RespectBrowserAcceptHeader = true;
                 options.ReturnHttpNotAcceptable = true;
 
-                options.Filters.Add(new ProducesAttribute("application/json", new[]{ "application/hateoas+json" }));
-                options.Filters.Add(new ConsumesAttribute("application/json",new[]{ "application/hateoas+json" }));
-                
+                options.Filters.Add(new ProducesAttribute("application/json", new[] { "application/hateoas+json" }));
+                options.Filters.Add(new ConsumesAttribute("application/json", new[] { "application/hateoas+json" }));
+
             });
 
         builder.Services.AddInfrastructureServices(builder.Configuration);
         builder.Services.AddApplicationServices();
 
         builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen();
-        builder.Services.Configure<MvcOptions>(config =>
+        builder.Services.AddHttpClient();
+        builder.Services.AddSwaggerGen(c =>
         {
-            var jsonOutputFormatter = config.OutputFormatters
-                .OfType<SystemTextJsonOutputFormatter>()?.FirstOrDefault();
-
-            if (jsonOutputFormatter != null)
+            c.SwaggerDoc("v1", new OpenApiInfo
             {
-                jsonOutputFormatter.SupportedMediaTypes.Add("application/hateoas+json");
-            }
+                Title = "Catalog API",
+            });
+
+            c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            {
+                In = ParameterLocation.Header,
+                Description = "Please insert JWT with Bearer into field",
+                Name = "Authorization",
+                Type = SecuritySchemeType.ApiKey
+            });
+            c.AddSecurityRequirement(new OpenApiSecurityRequirement {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        }
+                    },
+                    new string[] { }
+                }
+            });
         });
-        
+
         builder.Services.AddScoped<ValidateMediaTypeAttribute>();
         builder.Services.AddScoped(typeof(IQueueProducer<>), typeof(RabbitQueueProducer<>));
         var rabbitMqConfig = new RabbitMqConfiguration();
@@ -56,8 +81,26 @@ public class Program
             HostName = rabbitMqConfig.HostName,
             Port = rabbitMqConfig.Port
         });
-        
+
+        builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options => 
+                options.TokenValidationParameters = new TokenValidationParameters()
+                {
+                    IssuerSigningKey = new SymmetricSecurityKey
+                        (Encoding.UTF8.GetBytes(builder.Configuration["Jwt:ClientSecret"])),
+                    ValidateIssuer = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidateAudience = false,
+                    ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                });
+
+        builder.Services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
+        builder.Services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
+
+        builder.Services.AddAuthorization();
+
         var app = builder.Build();
+
 
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
@@ -67,13 +110,44 @@ public class Program
         }
 
         app.UseHttpsRedirection();
-
+        app.UseMiddleware<CodeHandlerMiddleware>();
+        app.UseAuthentication();
         app.UseAuthorization();
-
         app.MapControllers();
 
         app.Run();
     }
+}
 
+public class CodeHandlerMiddleware
+{
+    private readonly RequestDelegate _next;
+   
+    public CodeHandlerMiddleware(RequestDelegate next)
+    {
+        _next = next ?? throw new ArgumentNullException(nameof(next));
+    }
 
+    public async Task InvokeAsync(HttpContext context)
+    {
+        if (context.Request.Headers.Authorization.FirstOrDefault() is {} code)
+        { 
+            var httpFactory = context.RequestServices.GetRequiredService<IHttpClientFactory>();
+            var httpClient = httpFactory.CreateClient();
+
+            var configuration = context.RequestServices.GetRequiredService<IConfiguration>();
+        
+            var url = $"{configuration["Jwt:Issuer"]}{configuration["Jwt:AccessTokenUrl"]}?code={code}&clientSecret={configuration["Jwt:ClientSecret"]}";
+            var response = await httpClient.GetAsync(url);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var token = $"Bearer {await response.Content.ReadAsStringAsync()}";
+                context.Request.Headers.Authorization = new StringValues(token);
+                await _next(context);
+            }
+            else context.Response.StatusCode = 403;
+        }
+        else context.Response.StatusCode = 403;
+    }
 }
