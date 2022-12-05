@@ -78,6 +78,14 @@ public class ItemsController : ControllerBase
         return Ok(response);
     }
 
+    [AllowAnonymous]
+    [HttpGet("{id:int}/properties", Name = nameof(GetItemProperties))]
+    public async Task<ActionResult<ItemDto>> GetItemProperties(int categoryId, int id)
+    {
+        var items = await _mediator.Send(new GetItemPropertiesQuery(){Id = id});
+        return Ok(items);
+    }
+
     [Authorize(policy: "Items.Create")]
     [HttpPost(Name = nameof(CreateItem))]
     public async Task<ActionResult<ItemDto>> CreateItem(int categoryId, [FromBody] CreateItemCommand command)
@@ -133,6 +141,9 @@ public class ItemsController : ControllerBase
         {
             new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(GetItemById), values: new {categoryId, id }),
             "self",
+                "GET"),
+            new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(GetItemById), values: new {categoryId, id }),
+                "properties",
                 "GET"),
             new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(DeleteItem), values: new {categoryId, id }),
                 "delete_item",

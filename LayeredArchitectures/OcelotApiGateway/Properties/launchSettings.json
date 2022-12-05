@@ -1,12 +1,10 @@
 ﻿{
   "$schema": "https://json.schemastore.org/launchsettings.json",
   "profiles": {
-    "WebApplication1": {
+      "ocelot": {
       "commandName": "Project",
       "dotnetRunMessages": true,
-      "launchBrowser": false,
-      "launchUrl": "swagger",
-      "applicationUrl": "https://localhost:7197;",
+      "applicationUrl": "https://localhost:7273;",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

@@ -36,7 +36,7 @@ builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddAutoMapper(typeof(ImageProfile).Assembly);
 builder.Services.AddHostedService<ItemsMessagesConsumerService>();
-
+builder.Services.AddLogging();
 var cosmosOptions = new CosmosDbSettings();
 builder.Services.AddTransient(provider =>
 {
