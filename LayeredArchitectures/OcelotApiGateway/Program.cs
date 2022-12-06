@@ -1,3 +1,4 @@
+using Ocelot.Cache.CacheManager;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
 using OcelotApiGateway;
@@ -8,6 +9,10 @@ builder.Configuration
     .AddOcelot(builder.Environment);
 builder.Services.AddAuthentication();
 builder.Services.AddOcelot()
+    .AddCacheManager(x =>
+    {
+        x.WithDictionaryHandle();
+    })
     .AddSingletonDefinedAggregator<ItemsPropertiesAggregator>();
 
 var app = builder.Build();

@@ -9,8 +9,9 @@
           "Port": 7197
         }
       ],
-      "UpstreamHttpMethod": [ "POST", "PUT", "GET" ],
-      "UpstreamPathTemplate": "/categories"
+      "UpstreamHttpMethod": [ "GET" ],
+      "UpstreamPathTemplate": "/categories",
+      "FileCacheOptions": { "TtlSeconds": 60 }
     },
     {
       "DownstreamPathTemplate": "/categories/{id}",
@@ -21,8 +22,9 @@
           "Port": 7197
         }
       ],
-      "UpstreamHttpMethod": [ "POST", "PUT", "GET" ],
-      "UpstreamPathTemplate": "/categories/{id}"
+      "UpstreamHttpMethod": [ "GET" ],
+      "UpstreamPathTemplate": "/categories/{id}",
+      "FileCacheOptions": { "TtlSeconds": 60 }
     },
     {
       "DownstreamPathTemplate": "/categories/{id}/items/{itemId}/properties",
@@ -33,9 +35,10 @@
           "Port": 7197
         }
       ],
-      "UpstreamHttpMethod": [ "POST", "PUT", "GET" ],
+      "UpstreamHttpMethod": [ "GET" ],
       "UpstreamPathTemplate": "/categories/{id}/items/{itemId}/properties",
-      "Priority":  11 
+      "FileCacheOptions": { "TtlSeconds": 60 },
+      "Priority": 11
     },
     {
       "DownstreamPathTemplate": "/categories/{categoryId}/items/{itemId}",
@@ -48,6 +51,7 @@
       ],
       "UpstreamHttpMethod": [ "GET" ],
       "UpstreamPathTemplate": "/aggregation/categories/{categoryId}/items/{itemId}",
+      "FileCacheOptions": { "TtlSeconds": 60 },
       "Key": "Item"
     },
     {
@@ -62,6 +66,7 @@
       "UpstreamHttpMethod": [ "GET" ],
       "UpstreamPathTemplate": "/aggregation/categories/{categoryId}/items/{itemId}/properties",
       "Key": "ItemProperties",
+      "FileCacheOptions": { "TtlSeconds": 60 },
       "Priority": 10
     },
     {
@@ -74,6 +79,7 @@
         }
       ],
       "UpstreamHttpMethod": [ "GET" ],
+      "FileCacheOptions": { "TtlSeconds": 60 },
       "UpstreamPathTemplate": "/carts/{id}"
     }
   ],
@@ -85,7 +91,8 @@
       ],
       "UpstreamPathTemplate": "/categories/{categoryId}/items/{itemId}",
       "Aggregator": "ItemsPropertiesAggregator",
-      "Priority":  10 
+      "FileCacheOptions": { "TtlSeconds": 60 },
+      "Priority": 10
     }
   ],
   "GlobalConfiguration": {
