@@ -1,0 +1,36 @@
+###categories
+GET https://localhost:7273/categoriesHTTP/1.1
+Accept: application/json
+
+###categories with pagination
+GET https://localhost:7273/categories?pageNum=1&pageSize=2 HTTP/1.1
+Accept: application/json
+
+###category 
+GET https://localhost:7273/categories/2 HTTP/1.1
+Accept: application/json
+
+###items 
+GET https://localhost:7273/categories/2/items HTTP/1.1
+Accept: application/json
+
+###items with pagination
+GET https://localhost:7273/categories/2/items?pageNum=1&pageSize=1 HTTP/1.1
+Accept: application/json
+
+###item by id
+GET https://localhost:7273/categories/2/items/1 HTTP/1.1
+Accept: application/json
+
+###properties
+GET https://localhost:7273/categories/2/items/1/properties HTTP/1.1
+Accept: application/json
+
+###properties aggregator
+GET https://localhost:7273/categories/2/items_with_properties/1 HTTP/1.1
+Accept: application/json
+
+
+###carts
+GET https://localhost:7273/carts/5fa85f64-5717-4562-b3fc-2c963f66afa2 HTTP/1.1
+Accept: application/json

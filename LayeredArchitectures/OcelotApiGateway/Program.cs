@@ -1,12 +1,14 @@
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
+using OcelotApiGateway;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration
     .AddOcelot(builder.Environment);
-
-builder.Services.AddOcelot();
+builder.Services.AddAuthentication();
+builder.Services.AddOcelot()
+    .AddSingletonDefinedAggregator<ItemsPropertiesAggregator>();
 
 var app = builder.Build();
 
@@ -14,8 +16,8 @@ var app = builder.Build();
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
+//app.UseAuthorization();
 
-    
+
 app.UseOcelot();
 app.Run();

@@ -1,6 +1,18 @@
 {
   "Routes": [
     {
+      "DownstreamPathTemplate": "/categories",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7197
+        }
+      ],
+      "UpstreamHttpMethod": [ "POST", "PUT", "GET" ],
+      "UpstreamPathTemplate": "/categories"
+    },
+    {
       "DownstreamPathTemplate": "/categories/{id}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
@@ -13,7 +25,20 @@
       "UpstreamPathTemplate": "/categories/{id}"
     },
     {
-      "DownstreamPathTemplate": "/categories?PageNumber={pageNumber}&PageSize={pageSize}",
+      "DownstreamPathTemplate": "/categories/{id}/items/{itemId}/properties",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7197
+        }
+      ],
+      "UpstreamHttpMethod": [ "POST", "PUT", "GET" ],
+      "UpstreamPathTemplate": "/categories/{id}/items/{itemId}/properties",
+      "Priority":  11 
+    },
+    {
+      "DownstreamPathTemplate": "/categories/{categoryId}/items/{itemId}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
@@ -22,7 +47,22 @@
         }
       ],
       "UpstreamHttpMethod": [ "GET" ],
-      "UpstreamPathTemplate": "/categories"
+      "UpstreamPathTemplate": "/aggregation/categories/{categoryId}/items/{itemId}",
+      "Key": "Item"
+    },
+    {
+      "DownstreamPathTemplate": "/categories/{categoryId}/items/{itemId}/properties",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7197
+        }
+      ],
+      "UpstreamHttpMethod": [ "GET" ],
+      "UpstreamPathTemplate": "/aggregation/categories/{categoryId}/items/{itemId}/properties",
+      "Key": "ItemProperties",
+      "Priority": 10
     },
     {
       "DownstreamPathTemplate": "/api/v2/carts/{id}",
@@ -35,6 +75,17 @@
       ],
       "UpstreamHttpMethod": [ "GET" ],
       "UpstreamPathTemplate": "/carts/{id}"
+    }
+  ],
+  "Aggregates": [
+    {
+      "RouteKeys": [
+        "Item",
+        "ItemProperties"
+      ],
+      "UpstreamPathTemplate": "/categories/{categoryId}/items/{itemId}",
+      "Aggregator": "ItemsPropertiesAggregator",
+      "Priority":  10 
     }
   ],
   "GlobalConfiguration": {

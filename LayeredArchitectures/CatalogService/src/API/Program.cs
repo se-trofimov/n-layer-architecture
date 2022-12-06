@@ -148,7 +148,6 @@ public class CodeHandlerMiddleware
             }
             else context.Response.StatusCode = 403;
         }
-
-        await _next(context);
+        else await _next(context);
     }
 }
