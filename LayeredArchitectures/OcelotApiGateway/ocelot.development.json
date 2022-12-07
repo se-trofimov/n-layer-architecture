@@ -1,6 +1,18 @@
 {
   "Routes": [
     {
+      "DownstreamPathTemplate": "/api/authentication/login",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7222
+        }
+      ],
+      "UpstreamHttpMethod": [ "GET" ],
+      "UpstreamPathTemplate": "/authentication/login"
+    },
+    {
       "DownstreamPathTemplate": "/categories",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
@@ -14,6 +26,24 @@
       "FileCacheOptions": { "TtlSeconds": 60 }
     },
     {
+      "DownstreamPathTemplate": "/categories",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7197
+        }
+      ],
+      "UpstreamHttpMethod": [ "POST" ],
+      "UpstreamPathTemplate": "/categories",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer"
+      },
+      "RouteClaimsRequirement": {
+        "IsInRole": "Administrator"
+      }
+    },
+    {
       "DownstreamPathTemplate": "/categories/{id}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
@@ -22,9 +52,14 @@
           "Port": 7197
         }
       ],
-      "UpstreamHttpMethod": [ "GET" ],
+      "UpstreamHttpMethod": [ "POST", "PUT", "DELETE" ],
       "UpstreamPathTemplate": "/categories/{id}",
-      "FileCacheOptions": { "TtlSeconds": 60 }
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer"
+      },
+      "RouteClaimsRequirement": {
+        "IsInRole": "Administrator"
+      }
     },
     {
       "DownstreamPathTemplate": "/categories/{id}/items/{itemId}/properties",

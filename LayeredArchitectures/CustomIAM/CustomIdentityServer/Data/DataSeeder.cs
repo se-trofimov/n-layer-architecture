@@ -18,6 +18,8 @@ public class DataSeeder
             context.Permissions.Add(new Permission() { Title = "Category.Delete", Id = Guid.NewGuid() });
 
         var roles = await context.Roles.ToListAsync();
+        if (!roles.Exists(x => x.Title == "Administrator"))
+            context.Roles.Add(new Role() { Title = "Administrator", Id = Guid.NewGuid() });
         if (!roles.Exists(x => x.Title == "Manager"))
             context.Roles.Add(new Role() { Title = "Manager", Id = Guid.NewGuid()});
         if (!roles.Exists(x => x.Title == "Buyer"))
@@ -50,6 +52,31 @@ public class DataSeeder
             manager.Permissions.Add(permission);
         }
 
+        var admin = context.Roles
+            .Include(x => x.Permissions)
+            .First(x => x.Title == "Administrator");
+
+        if (manager.Permissions.FirstOrDefault(x => x.Title == "Category.Read") is null)
+        {
+            var permission = context.Permissions.First(x => x.Title == "Category.Read");
+            admin.Permissions.Add(permission);
+        }
+        if (admin.Permissions.FirstOrDefault(x => x.Title == "Category.Update") is null)
+        {
+            var permission = context.Permissions.First(x => x.Title == "Category.Update");
+            admin.Permissions.Add(permission);
+        }
+        if (admin.Permissions.FirstOrDefault(x => x.Title == "Category.Delete") is null)
+        {
+            var permission = context.Permissions.First(x => x.Title == "Category.Delete");
+            admin.Permissions.Add(permission);
+        }
+        if (admin.Permissions.FirstOrDefault(x => x.Title == "Category.Create") is null)
+        {
+            var permission = context.Permissions.First(x => x.Title == "Category.Create");
+            admin.Permissions.Add(permission);
+        }
+
         var buyer = context.Roles
             .Include(x => x.Permissions)
             .First(x => x.Title == "Buyer");
@@ -63,7 +90,7 @@ public class DataSeeder
         await context.SaveChangesAsync();
 
         
-        if (context.Users.FirstOrDefault(x=>x.Name == "Super Administrator") is null)
+        if (context.Users.FirstOrDefault(x=>x.Name == "Administrator") is null)
         {
             PasswordEncrypt passwordEncrypt = new PasswordEncrypt();
             
@@ -75,7 +102,7 @@ public class DataSeeder
                 Password = passwordEncrypt.GeneratePasswordHashUsingSalt("password")
             };
 
-            user.Roles.Add(manager);
+            user.Roles.Add(admin);
 
             context.Users.Add(user);
             await context.SaveChangesAsync();

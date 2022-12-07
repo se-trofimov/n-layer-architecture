@@ -1,6 +1,22 @@
-###categories
-GET https://localhost:7273/categoriesHTTP/1.1
+###login
+GET https://localhost:7273/authentication/login?email=super.admin@gmail.com&password=password HTTP/1.1
 Accept: application/json
+
+###categories
+GET https://localhost:7273/categories HTTP/1.1
+Accept: application/json
+
+###add category
+POST https://localhost:7273/categories HTTP/1.1
+Accept: application/json
+x-authentication: ae381ca3a53c4b55bb0ad26fee82df70
+content-type: application/json
+
+{
+    "name": "sample",
+    "image": "sample-image.png",
+    "parentCategoryId":null
+}
 
 ###categories with pagination
 GET https://localhost:7273/categories?pageNum=1&pageSize=2 HTTP/1.1
@@ -10,6 +26,18 @@ Accept: application/json
 GET https://localhost:7273/categories/2 HTTP/1.1
 Accept: application/json
 
+###change category
+PUT https://localhost:7273/categories/2 HTTP/1.1
+Accept: application/json
+x-authentication: ae381ca3a53c4b55bb0ad26fee82df70
+content-type: application/json
+
+{
+    "name": "sample",
+    "image": "sample-image.png",
+    "parentCategoryId":1
+}
+
 ###items 
 GET https://localhost:7273/categories/2/items HTTP/1.1
 Accept: application/json
@@ -18,16 +46,12 @@ Accept: application/json
 GET https://localhost:7273/categories/2/items?pageNum=1&pageSize=1 HTTP/1.1
 Accept: application/json
 
-###item by id
-GET https://localhost:7273/categories/2/items/1 HTTP/1.1
-Accept: application/json
-
 ###properties
 GET https://localhost:7273/categories/2/items/1/properties HTTP/1.1
 Accept: application/json
 
 ###properties aggregator
-GET https://localhost:7273/categories/2/items_with_properties/1 HTTP/1.1
+GET https://localhost:7273/categories/2/items/1 HTTP/1.1
 Accept: application/json
 
 
