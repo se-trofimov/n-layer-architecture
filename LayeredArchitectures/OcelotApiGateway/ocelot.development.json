@@ -26,6 +26,20 @@
       "FileCacheOptions": { "TtlSeconds": 60 }
     },
     {
+      "DownstreamPathTemplate": "/categories/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7197
+        }
+      ],
+      "UpstreamHttpMethod": [ "GET" ],
+      "UpstreamPathTemplate": "/categories/{id}",
+      "FileCacheOptions": { "TtlSeconds": 60 },
+      "Priority": 4 
+    },
+    {
       "DownstreamPathTemplate": "/categories",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
