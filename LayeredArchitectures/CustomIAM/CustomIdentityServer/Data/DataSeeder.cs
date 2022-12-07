@@ -16,6 +16,14 @@ public class DataSeeder
             context.Permissions.Add(new Permission() { Title = "Category.Create", Id = Guid.NewGuid() });
         if (!permissions.Exists(x => x.Title == "Category.Delete"))
             context.Permissions.Add(new Permission() { Title = "Category.Delete", Id = Guid.NewGuid() });
+        if (!permissions.Exists(x => x.Title == "Items.Read"))
+            context.Permissions.Add(new Permission() { Title = "Items.Read", Id = Guid.NewGuid() });
+        if (!permissions.Exists(x => x.Title == "Items.Update"))
+            context.Permissions.Add(new Permission() { Title = "Items.Update", Id = Guid.NewGuid() });
+        if (!permissions.Exists(x => x.Title == "Items.Create"))
+            context.Permissions.Add(new Permission() { Title = "Items.Create", Id = Guid.NewGuid() });
+        if (!permissions.Exists(x => x.Title == "Items.Delete"))
+            context.Permissions.Add(new Permission() { Title = "Items.Delete", Id = Guid.NewGuid() });
 
         var roles = await context.Roles.ToListAsync();
         if (!roles.Exists(x => x.Title == "Administrator"))
@@ -52,6 +60,27 @@ public class DataSeeder
             manager.Permissions.Add(permission);
         }
 
+        if (manager.Permissions.FirstOrDefault(x => x.Title == "Items.Read") is null)
+        {
+            var permission = context.Permissions.First(x => x.Title == "Items.Read");
+            manager.Permissions.Add(permission);
+        }
+        if (manager.Permissions.FirstOrDefault(x => x.Title == "Items.Update") is null)
+        {
+            var permission = context.Permissions.First(x => x.Title == "Items.Update");
+            manager.Permissions.Add(permission);
+        }
+        if (manager.Permissions.FirstOrDefault(x => x.Title == "Items.Delete") is null)
+        {
+            var permission = context.Permissions.First(x => x.Title == "Items.Delete");
+            manager.Permissions.Add(permission);
+        }
+        if (manager.Permissions.FirstOrDefault(x => x.Title == "Items.Create") is null)
+        {
+            var permission = context.Permissions.First(x => x.Title == "Items.Create");
+            manager.Permissions.Add(permission);
+        }
+
         var admin = context.Roles
             .Include(x => x.Permissions)
             .First(x => x.Title == "Administrator");
@@ -77,6 +106,27 @@ public class DataSeeder
             admin.Permissions.Add(permission);
         }
 
+        if (admin.Permissions.FirstOrDefault(x => x.Title == "Items.Read") is null)
+        {
+            var permission = context.Permissions.First(x => x.Title == "Items.Read");
+            admin.Permissions.Add(permission);
+        }
+        if (admin.Permissions.FirstOrDefault(x => x.Title == "Items.Update") is null)
+        {
+            var permission = context.Permissions.First(x => x.Title == "Items.Update");
+            admin.Permissions.Add(permission);
+        }
+        if (admin.Permissions.FirstOrDefault(x => x.Title == "Items.Delete") is null)
+        {
+            var permission = context.Permissions.First(x => x.Title == "Items.Delete");
+            admin.Permissions.Add(permission);
+        }
+        if (admin.Permissions.FirstOrDefault(x => x.Title == "Items.Create") is null)
+        {
+            var permission = context.Permissions.First(x => x.Title == "Items.Create");
+            admin.Permissions.Add(permission);
+        }
+
         var buyer = context.Roles
             .Include(x => x.Permissions)
             .First(x => x.Title == "Buyer");
@@ -84,6 +134,11 @@ public class DataSeeder
         if (buyer.Permissions.FirstOrDefault(x => x.Title == "Category.Read") is null)
         {
             var permission = context.Permissions.First(x => x.Title == "Category.Read");
+            buyer.Permissions.Add(permission);
+        }
+        if (buyer.Permissions.FirstOrDefault(x => x.Title == "Items.Read") is null)
+        {
+            var permission = context.Permissions.First(x => x.Title == "Items.Read");
             buyer.Permissions.Add(permission);
         }
 
@@ -103,6 +158,42 @@ public class DataSeeder
             };
 
             user.Roles.Add(admin);
+
+            context.Users.Add(user);
+            await context.SaveChangesAsync();
+        }
+
+        if (context.Users.FirstOrDefault(x => x.Name == "Manager") is null)
+        {
+            PasswordEncrypt passwordEncrypt = new PasswordEncrypt();
+
+            User user = new User()
+            {
+                Id = Guid.NewGuid(),
+                Email = "super.manager@gmail.com",
+                Name = "Super Manager",
+                Password = passwordEncrypt.GeneratePasswordHashUsingSalt("password")
+            };
+
+            user.Roles.Add(manager);
+
+            context.Users.Add(user);
+            await context.SaveChangesAsync();
+        }
+
+        if (context.Users.FirstOrDefault(x => x.Name == "Buyer") is null)
+        {
+            PasswordEncrypt passwordEncrypt = new PasswordEncrypt();
+
+            User user = new User()
+            {
+                Id = Guid.NewGuid(),
+                Email = "super.Buyer@gmail.com",
+                Name = "Super Buyer",
+                Password = passwordEncrypt.GeneratePasswordHashUsingSalt("password")
+            };
+
+            user.Roles.Add(buyer);
 
             context.Users.Add(user);
             await context.SaveChangesAsync();

@@ -38,6 +38,11 @@ content-type: application/json
     "parentCategoryId":1
 }
 
+###delete category
+DELETE https://localhost:7273/categories/13 HTTP/1.1
+Accept: application/json
+x-authentication: ae381ca3a53c4b55bb0ad26fee82df70
+
 ###items 
 GET https://localhost:7273/categories/2/items HTTP/1.1
 Accept: application/json
@@ -53,7 +58,6 @@ Accept: application/json
 ###properties aggregator
 GET https://localhost:7273/categories/2/items/1 HTTP/1.1
 Accept: application/json
-
 
 ###carts
 GET https://localhost:7273/carts/5fa85f64-5717-4562-b3fc-2c963f66afa2 HTTP/1.1
