@@ -111,9 +111,10 @@ public class ItemsController : ControllerBase
     public async Task<ActionResult> ChangeItem(int categoryId, int id, [FromBody] ChangeItemCommand command)
     {
         command.Id = id;
-        var result = await _mediator.Send(command);
+        await _mediator.Send(command);
         await _mediator.Publish(new ItemHasBeenChangedNotification(command.Id, command.Name, command.Image, command.Price));
-        return NoContent();
+        var updated = await _mediator.Send(new GetItemByIdQuery(id, categoryId));
+        return Ok(updated);
     }
 
     [Authorize(policy: "Items.Delete")]
