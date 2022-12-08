@@ -1,0 +1,99 @@
+###login
+GET https://localhost:7273/authentication/login?email=super.admin@gmail.com&password=password HTTP/1.1
+Accept: application/json
+
+###categories
+GET https://localhost:7273/categories HTTP/1.1
+Accept: application/json
+
+###add category
+POST https://localhost:7273/categories HTTP/1.1
+Accept: application/json
+x-authentication: 095b0dce0ecf48d4bcc8c98de7639a7c
+content-type: application/json
+
+{
+    "name": "sample",
+    "image": "sample-image.png",
+    "parentCategoryId":null
+}
+
+###categories with pagination
+GET https://localhost:7273/categories?pageNum=1&pageSize=2 HTTP/1.1
+Accept: application/json
+
+###category 
+GET https://localhost:7273/categories/2 HTTP/1.1
+Accept: application/json
+
+###change category
+PUT https://localhost:7273/categories/2 HTTP/1.1
+Accept: application/json
+x-authentication: 095b0dce0ecf48d4bcc8c98de7639a7c
+content-type: application/json
+
+{
+    "name": "sample",
+    "image": "sample-image.png",
+    "parentCategoryId":1
+}
+
+###delete category
+DELETE https://localhost:7273/categories/13 HTTP/1.1
+Accept: application/json
+x-authentication: 095b0dce0ecf48d4bcc8c98de7639a7c
+
+###items 
+GET https://localhost:7273/categories/2/items HTTP/1.1
+Accept: application/json
+
+###add item
+POST https://localhost:7273/categories/2/items HTTP/1.1
+Accept: application/json
+x-authentication: 095b0dce0ecf48d4bcc8c98de7639a7c
+content-type: application/json
+
+{
+    "name": "sample",
+    "description": "sample",
+    "price": 100,
+    "amount": 10,
+    "image": "sample-image.png"
+}
+
+###items with pagination
+GET https://localhost:7273/categories/2/items?pageNum=1&pageSize=1 HTTP/1.1
+Accept: application/json
+
+###properties
+GET https://localhost:7273/categories/2/items/1/properties HTTP/1.1
+Accept: application/json
+
+###properties aggregator
+GET https://localhost:7273/categories/2/items/1 HTTP/1.1
+Accept: application/json
+
+###change item
+PUT https://localhost:7273/categories/2/items/5 HTTP/1.1
+Accept: application/json
+x-authentication: 095b0dce0ecf48d4bcc8c98de7639a7c
+content-type: application/json
+
+{
+    "name": "sample",
+    "description": "sample",
+    "price": 100,
+    "amount": 10,
+    "image": "sample-image.png",
+    "categoryId": 2
+}
+
+###delete item
+DELETE https://localhost:7273/categories/2/items/5 HTTP/1.1
+Accept: application/json
+x-authentication: 095b0dce0ecf48d4bcc8c98de7639a7c
+
+
+###carts
+GET https://localhost:7273/carts/5fa85f64-5717-4562-b3fc-2c963f66afa2 HTTP/1.1
+Accept: application/json

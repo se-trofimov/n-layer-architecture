@@ -5,7 +5,7 @@ using Messaging.Abstractions;
 
 namespace CartingService;
 
-public class ItemsMessagesConsumerService: IHostedService
+public class ItemsMessagesConsumerService : IHostedService
 {
     private readonly IQueueConsumer _queueConsumer;
     private readonly ICartRepository _cartRepository;
@@ -15,9 +15,14 @@ public class ItemsMessagesConsumerService: IHostedService
         _queueConsumer = queueConsumer ?? throw new ArgumentNullException(nameof(queueConsumer));
         _cartRepository = cartRepository ?? throw new ArgumentNullException(nameof(cartRepository));
     }
-    public async Task StartAsync(CancellationToken cancellationToken)
+    public Task StartAsync(CancellationToken cancellationToken)
     {
-        await _queueConsumer.ListenAsync<ItemHasBeenChangedNotification>("items-changed-queue", OnItemHasBeenChangedNotificationReceived, cancellationToken);
+        return Task.Run(
+            () =>
+            {
+                _queueConsumer.ListenAsync<ItemHasBeenChangedNotification>("items-changed-queue",
+                    OnItemHasBeenChangedNotificationReceived, cancellationToken);
+            }, cancellationToken);
     }
 
     private async Task OnItemHasBeenChangedNotificationReceived(ItemHasBeenChangedNotification message)
@@ -26,7 +31,7 @@ public class ItemsMessagesConsumerService: IHostedService
         {
             var itemToChange = cart.Items.First(x => x.Id == message.Id);
             itemToChange.Image = new Image(message.Image, itemToChange.Image?.AltText);
-           
+
             if (!string.IsNullOrWhiteSpace(message.Name))
                 itemToChange.Name = message.Name;
 

@@ -1,0 +1,150 @@
+{
+  "Routes": [
+    {
+      "DownstreamPathTemplate": "/api/authentication/login",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7222
+        }
+      ],
+      "UpstreamHttpMethod": [ "GET" ],
+      "UpstreamPathTemplate": "/authentication/login"
+    },
+    {
+      "DownstreamPathTemplate": "/categories",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7197
+        }
+      ],
+      "UpstreamHttpMethod": [ "GET" ],
+      "UpstreamPathTemplate": "/categories",
+      "FileCacheOptions": { "TtlSeconds": 60 }
+    },
+    {
+      "DownstreamPathTemplate": "/categories/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7197
+        }
+      ],
+      "UpstreamHttpMethod": [ "GET" ],
+      "UpstreamPathTemplate": "/categories/{id}",
+      "FileCacheOptions": { "TtlSeconds": 60 },
+      "Priority": 4 
+    },
+    {
+      "DownstreamPathTemplate": "/categories",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7197
+        }
+      ],
+      "UpstreamHttpMethod": [ "POST" ],
+      "UpstreamPathTemplate": "/categories",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer"
+      },
+      "RouteClaimsRequirement": {
+        "IsInRole": "Administrator"
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/categories/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7197
+        }
+      ],
+      "UpstreamHttpMethod": [ "POST", "PUT", "DELETE" ],
+      "UpstreamPathTemplate": "/categories/{id}",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer"
+      },
+      "RouteClaimsRequirement": {
+        "IsInRole": "Administrator"
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/categories/{id}/items/{itemId}/properties",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7197
+        }
+      ],
+      "UpstreamHttpMethod": [ "GET" ],
+      "UpstreamPathTemplate": "/categories/{id}/items/{itemId}/properties",
+      "FileCacheOptions": { "TtlSeconds": 60 },
+      "Priority": 11
+    },
+    {
+      "DownstreamPathTemplate": "/categories/{categoryId}/items/{itemId}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7197
+        }
+      ],
+      "UpstreamHttpMethod": [ "GET" ],
+      "UpstreamPathTemplate": "/aggregation/categories/{categoryId}/items/{itemId}",
+      "FileCacheOptions": { "TtlSeconds": 60 },
+      "Key": "Item"
+    },
+    {
+      "DownstreamPathTemplate": "/categories/{categoryId}/items/{itemId}/properties",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7197
+        }
+      ],
+      "UpstreamHttpMethod": [ "GET" ],
+      "UpstreamPathTemplate": "/aggregation/categories/{categoryId}/items/{itemId}/properties",
+      "Key": "ItemProperties",
+      "FileCacheOptions": { "TtlSeconds": 60 },
+      "Priority": 10
+    },
+    {
+      "DownstreamPathTemplate": "/api/v2/carts/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7274
+        }
+      ],
+      "UpstreamHttpMethod": [ "GET" ],
+      "FileCacheOptions": { "TtlSeconds": 60 },
+      "UpstreamPathTemplate": "/carts/{id}"
+    }
+  ],
+  "Aggregates": [
+    {
+      "RouteKeys": [
+        "Item",
+        "ItemProperties"
+      ],
+      "UpstreamPathTemplate": "/categories/{categoryId}/items/{itemId}",
+      "Aggregator": "ItemsPropertiesAggregator",
+      "FileCacheOptions": { "TtlSeconds": 60 },
+      "Priority": 10
+    }
+  ],
+  "GlobalConfiguration": {
+    "BaseUrl": "https://localhost:7273"
+  }
+}

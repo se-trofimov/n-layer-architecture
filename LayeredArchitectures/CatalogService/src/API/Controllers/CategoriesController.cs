@@ -117,7 +117,8 @@ public class CategoriesController : ControllerBase
     {
         command.Id = id;
         await _mediator.Send(command);
-        return Ok();
+        var updated = await _mediator.Send(new GetCategoryByIdQuery(id));
+        return Ok(updated);
     }
 
     [Authorize(policy: "Category.Delete")]
