@@ -13,6 +13,6 @@ public sealed class ItemType : ObjectGraphType<Item>
         Field(i => i.Price);
         Field(i => i.Amount);
         Field(i => i.Image, nullable: true);
-      
+        Field<ParentCategoryType>("category").Resolve(x => x.Source.Category);
     }
 }

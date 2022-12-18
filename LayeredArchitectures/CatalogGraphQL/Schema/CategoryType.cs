@@ -1,5 +1,4 @@
 using CatalogGraphQL.Models;
-using GraphQL;
 using GraphQL.Types;
 
 namespace CatalogGraphQL.Schema;
