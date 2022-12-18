@@ -145,6 +145,7 @@ public class CategoriesController : ControllerBase
 
         var categoryLinks = CreateLinksForCategory(category.Id);
         var response = new LinkWrapper<CategoryDto>(category, categoryLinks);
+
         return CreatedAtRoute(nameof(GetCategoryById), new { id = category.Id }, response);
     }
 }
