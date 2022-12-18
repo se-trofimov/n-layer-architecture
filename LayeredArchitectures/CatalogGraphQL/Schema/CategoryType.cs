@@ -7,6 +7,8 @@ public sealed class CategoryType: ObjectGraphType<Category>
 {
     public CategoryType()
     {
+        Name = "Category";
+
         Field(x => x.Id, type: typeof(IdGraphType)).Description("Category Id");
         Field(x => x.Name).Description("Category Name");
         Field(x => x.Image, nullable: true).Description("Image URL");

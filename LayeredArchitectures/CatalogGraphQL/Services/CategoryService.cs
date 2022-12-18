@@ -3,12 +3,6 @@ using CatalogGraphQL.Persistence;
 using Microsoft.EntityFrameworkCore;
 namespace CatalogGraphQL.Services;
 
-public interface ICategoryService
-{
-    Task<PagedList<Category>> GetAsync(int pageNum = 1, int pageSize= 10, 
-        CancellationToken cancellationToken = default);
-}
-
 public class CategoryService : ICategoryService
 {
     private readonly ApplicationDbContext _dbContext;

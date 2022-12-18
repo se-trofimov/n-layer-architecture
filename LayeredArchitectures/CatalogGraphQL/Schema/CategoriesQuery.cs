@@ -7,9 +7,9 @@ namespace CatalogGraphQL.Schema;
 
 public sealed class CategoriesQuery : ObjectGraphType
 {
-    public CategoriesQuery(IServiceProvider provider, ILogger<CategoriesQuery> logger)
+    public CategoriesQuery()
     {
-        Name = "Query";
+        Name = "CategoryQuery";
 
         Field<PaginationMetadataType<CategoryType, Category>>("categories")
             .Argument<int>("pageNum")
