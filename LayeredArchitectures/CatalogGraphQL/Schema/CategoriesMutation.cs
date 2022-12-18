@@ -29,7 +29,6 @@ public sealed class CategoriesMutation : ObjectGraphType
                 return await service.UpdateCategoryAsync(argument);
             });
 
-
         Field<CategoryType>("deleteCategory")
             .Argument<NonNullGraphType<CategoryDeleteInputType>>("category")
             .ResolveAsync(async context =>

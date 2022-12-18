@@ -2,11 +2,11 @@
 
 namespace CatalogGraphQL.Schema;
 
-public sealed class CategoryDeleteInputType : InputObjectGraphType
+public sealed class ItemDeleteInputType : InputObjectGraphType
 {
-    public CategoryDeleteInputType()
+    public ItemDeleteInputType()
     {
-        Name = "CategoryDeletionInput";
+        Name = "ItemDeletionInput";
         Field<NonNullGraphType<IntGraphType>>("id");
     }
 }
