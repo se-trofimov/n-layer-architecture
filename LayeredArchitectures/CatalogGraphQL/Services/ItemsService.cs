@@ -44,9 +44,16 @@ public class ItemsService : IItemsService
         if (category is null)
             throw new Exception($"Category with id {item.CategoryId} not found");
 
-        _dbContext.Items.Update(item);
+        exists.Name = item.Name;
+        exists.Amount = item.Amount;
+        exists.CategoryId = item.CategoryId;
+        exists.Price = item.Price;
+        exists.Image = item.Image;
+        exists.Description = item.Description;
+         
+
         await _dbContext.SaveChangesAsync(cancellationToken);
-        return item;
+        return exists;
     }
 
     public async Task DeleteItemAsync(int id, CancellationToken cancellationToken = default)
