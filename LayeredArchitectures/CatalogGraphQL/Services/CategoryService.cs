@@ -30,4 +30,56 @@ public class CategoryService : ICategoryService
 
         return res;
     }
+
+    public async Task<Category> CreateCategoryAsync(Category category, CancellationToken cancellationToken = default)
+    {
+        if (category.ParentCategoryId.HasValue)
+        {
+            var parent = await _dbContext.Categories
+                .FirstOrDefaultAsync(x => x.Id == category.ParentCategoryId, cancellationToken: cancellationToken);
+
+            if (parent is null)
+                throw new InvalidOperationException($"Parent Category with Id {category.ParentCategoryId} not found");
+        }
+
+        _dbContext.Add(category);
+        await _dbContext.SaveChangesAsync(cancellationToken);
+        return category;
+    }
+
+    public async Task<Category> UpdateCategoryAsync(Category category, CancellationToken cancellationToken = default)
+    {
+        var existingCategory = await _dbContext.Categories
+            .Include(x=>x.Items)
+            .FirstOrDefaultAsync(x => x.Id == category.Id, cancellationToken: cancellationToken);
+
+        if (existingCategory is null)
+            throw new InvalidOperationException($"Category with Id {category.Id} not found");
+        
+        if (category.ParentCategoryId.HasValue)
+        {
+            var parent = await _dbContext.Categories
+                .FirstOrDefaultAsync(x => x.Id == category.ParentCategoryId, cancellationToken: cancellationToken);
+
+            if (parent is null)
+                throw new InvalidOperationException($"Parent Category with Id {category.ParentCategoryId} not found");
+        }
+
+        existingCategory.Name = category.Name;
+        existingCategory.Image = category.Image;
+        existingCategory.ParentCategoryId = category.ParentCategoryId;
+
+        await _dbContext.SaveChangesAsync(cancellationToken);
+        return existingCategory;
+    }
+
+    public async Task DeleteCategoryAsync(int id, CancellationToken cancellationToken = default)
+    {
+        var existingCategory = await _dbContext.Categories
+            .FirstOrDefaultAsync(x => x.Id == id, cancellationToken: cancellationToken);
+        if (existingCategory is null)
+            throw new InvalidOperationException($"Category with Id {id} not found");
+        _dbContext.Categories.Remove(existingCategory);
+        await _dbContext.SaveChangesAsync(cancellationToken);
+    }
 }
